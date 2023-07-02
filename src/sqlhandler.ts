@@ -84,6 +84,12 @@ export class sqlHandler {
         return {homework_uuid: hw_uuid, homework_id: id.insertId};
     };
 
+    public updateHomeworkMessage = async (connection: mysql.Connection, message_id: string, hw_uuid: string):Promise<any> => {
+        const [id, fields]: any = await connection.query(`UPDATE homework_table SET hw_messageID=? WHERE hw_uuid=?`, [message_id, hw_uuid]);
+        console.log(id, fields);
+        return id;
+    };
+
     public registerUser = async (connection: mysql.Connection, username:string, userid:string ): Promise<boolean> => {
         try {
             await connection.query(`INSERT INTO user_table(user_id, user_name) VALUES(?,?)`, [userid, username]);

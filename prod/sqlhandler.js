@@ -65,6 +65,11 @@ class sqlHandler {
         connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework, '[,' , '[');`);
         return { homework_uuid: hw_uuid, homework_id: id.insertId };
     };
+    updateHomeworkMessage = async (connection, message_id, hw_uuid) => {
+        const [id, fields] = await connection.query(`UPDATE homework_table SET hw_messageID=? WHERE hw_uuid=?`, [message_id, hw_uuid]);
+        console.log(id, fields);
+        return id;
+    };
     registerUser = async (connection, username, userid) => {
         try {
             await connection.query(`INSERT INTO user_table(user_id, user_name) VALUES(?,?)`, [userid, username]);
