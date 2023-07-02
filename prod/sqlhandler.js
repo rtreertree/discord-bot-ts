@@ -25,13 +25,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sqlHandler = void 0;
 const mysql = __importStar(require("mysql2/promise"));
+const short_uuid_1 = require("short-uuid");
 ;
 class sqlHandler {
     config = {
-        "host": "193.31.31.132",
-        "user": "u95931_CMD1w5Zr48",
-        "password": "2IE9BGEwK+rsVgce.uAgqj88",
-        "database": "s95931_user",
+        "host": "193.31.31.159",
+        "user": "u99291_ZYAmDB3Fub",
+        "password": "K6ye@NiwvX+mOf1Ct+zugZAB",
+        "database": "s99291_databot",
         "connectionLimit": 10,
         "multipleStatements": true
     };
@@ -41,9 +42,56 @@ class sqlHandler {
     createConnection = async () => {
         return mysql.createConnection(this.config);
     };
-    // : Promise<mysql.OkPacket | mysql.ResultSetHeader | mysql.RowDataPacket[] | mysql.RowDataPacket[][] | mysql.OkPacket[]>
+    ThisFunctinForClearTheDatabase = async (connection) => {
+        await connection.query(`UPDATE user_table SET undone_homework="[]", done_homework="[]"`);
+        await connection.query("truncate homework_table;");
+        return;
+    };
     getUserData = async (connection, userid) => {
-        return connection.query("SELECT * FROM user_data WHERE user_id = ?", userid).then(([rows, fields]) => rows);
+        return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);
+    };
+    addHomework = async (connection, homework) => {
+        homework.due_date = homework.due_date.split('/').join(',').split('-').join(',').split(',').reverse().join("-");
+        const hw_uuid = (0, short_uuid_1.generate)();
+        const [id, fields] = await connection.query("INSERT INTO homework_table(hw_subject,hw_name,hw_description,hw_page,hw_duedate,hw_uuid) VALUES (?,?,?,?,?,?);", [
+            homework.subject,
+            homework.name,
+            homework.description,
+            homework.page,
+            homework.due_date,
+            hw_uuid,
+        ]);
+        connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,']',',"${id.insertId}"]');`);
+        connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework, '[,' , '[');`);
+        return { homework_uuid: hw_uuid, homework_id: id.insertId };
+    };
+    registerUser = async (connection, username, userid) => {
+        try {
+            await connection.query(`INSERT INTO user_table(user_id, user_name) VALUES(?,?)`, [userid, username]);
+            return true;
+        }
+        catch (e) {
+            console.error(e);
+            return false;
+        }
+    };
+    getAllUserHomework = async (connection, userid) => {
+        let [[userdone, userundone], homework] = await Promise.all([
+            connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid).then(([rows, f]) => [rows[0].undone_homework, rows[0].done_homework]),
+            connection.query(`SELECT * FROM homework_table`).then(([rows, f]) => rows),
+        ]);
+        let userhomework = [];
+        homework.forEach((element) => {
+            if (userdone.includes(`"${element.homework_id}"`)) {
+                element.isDone = true;
+                userhomework.push(element);
+            }
+            else if (userundone.includes(`"${element.homework_id}"`)) {
+                element.isDone = false;
+                userhomework.push(element);
+            }
+        });
+        return userhomework;
     };
 }
 exports.sqlHandler = sqlHandler;
