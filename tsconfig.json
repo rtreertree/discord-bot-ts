@@ -13,6 +13,7 @@
   },
   "include": [
     "./*/*.ts",
-  ],
+    "./*/*/*.ts"
+, "src/commands/adminCommands/register.ts"  ],
 
 }

@@ -59,7 +59,7 @@ class sqlHandler {
             homework.description,
             homework.page,
             homework.due_date,
-            hw_uuid,
+            hw_uuid, []
         ]);
         connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,']',',"${id.insertId}"]');`);
         connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework, '[,' , '[');`);
@@ -76,7 +76,6 @@ class sqlHandler {
             return true;
         }
         catch (e) {
-            console.error(e);
             return false;
         }
     };
