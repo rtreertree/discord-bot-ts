@@ -3,8 +3,9 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 //import Listener
-import ready from "./listeners/ready"
-import interactionCreate from "./listeners/interactionCreate"
+import ready from "./listeners/ready";
+import interactionCreate from "./listeners/interactionCreate";
+import messageReactionAdd from "./listeners/messageReactionAdd";
 //import Commands
 
 
@@ -23,6 +24,14 @@ const client: Client = new Client({
 
 ready(client);
 interactionCreate(client);
+// messageReactionAdd(client);
+
+client.on("messageReactionAdd", async (reaction: any, user) => {
+    if (!(reaction.message.author.id === user.id)){
+        //Do whatever you like with it
+        console.log(reaction.message)
+    };
+});
 
 client.login(token);
 

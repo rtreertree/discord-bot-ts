@@ -44,4 +44,12 @@ const client = new discord_js_1.Client({
 });
 (0, ready_1.default)(client);
 (0, interactionCreate_1.default)(client);
+// messageReactionAdd(client);
+client.on("messageReactionAdd", async (reaction, user) => {
+    if (!(reaction.message.author.id === user.id)) {
+        //Do whatever you like with it
+        console.log(reaction.message);
+    }
+    ;
+});
 client.login(token);
