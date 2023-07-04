@@ -32,7 +32,7 @@ dotenv.config();
 //import Listener
 const ready_1 = __importDefault(require("./listeners/ready"));
 const interactionCreate_1 = __importDefault(require("./listeners/interactionCreate"));
-//import Commands
+const messageReactionAdd_1 = __importDefault(require("./listeners/messageReactionAdd"));
 console.log("Starting . . .");
 const token = process.env.TOKEN;
 const guild_id = process.env.GUILD_ID;
@@ -40,16 +40,12 @@ const app_id = process.env.APP_ID;
 const client = new discord_js_1.Client({
     intents: [
         discord_js_1.GatewayIntentBits.Guilds,
+        discord_js_1.GatewayIntentBits.GuildMessageReactions,
+        discord_js_1.GatewayIntentBits.GuildEmojisAndStickers,
+        discord_js_1.GatewayIntentBits.GuildMessages
     ]
 });
 (0, ready_1.default)(client);
 (0, interactionCreate_1.default)(client);
-// messageReactionAdd(client);
-client.on("messageReactionAdd", async (reaction, user) => {
-    if (!(reaction.message.author.id === user.id)) {
-        //Do whatever you like with it
-        console.log(reaction.message);
-    }
-    ;
-});
+(0, messageReactionAdd_1.default)(client);
 client.login(token);

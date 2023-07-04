@@ -1,6 +1,7 @@
 import { Command } from "./Command";
-import { pong } from "./commands/pong";
+import { ping } from "./commands/ping";
 import { register } from "./commands/adminCommands/register";
 import { addHomework } from "./commands/adminCommands/addHomework";
+import { deleteHomework } from "./commands/adminCommands/deleteHomework";
 
-export const Commands: Command[] = [pong, register, addHomework];
+export const Commands: Command[] = [ping, register, addHomework, deleteHomework];

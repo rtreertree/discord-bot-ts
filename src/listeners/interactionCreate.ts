@@ -3,7 +3,6 @@ import { Commands } from "../Commands"
 
 export default (client : Client): void => {
     client.on("interactionCreate", async (interaction : Interaction) => {
-        console.log(interaction.user)
         if (interaction.isCommand()){
             await handleSlashCommand(client, interaction);
         }

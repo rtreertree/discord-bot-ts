@@ -53,7 +53,7 @@ export class sqlHandler {
     }
 
     //Create connection;
-    public createConnection = async (): Promise<mysql.Connection> => {
+    public createConnection = (): Promise<mysql.Connection> => {
         return mysql.createConnection(this.config);
     };
 
@@ -116,5 +116,16 @@ export class sqlHandler {
             }
         });
         return userhomework;
+    };
+
+
+    //NEED FIX: add for user_table edit;
+    public deleteHomework = async (connection: mysql.Connection, homeworkID: Number): Promise<boolean> => {
+        const [rows, fields]: any = await connection.query(`DELETE FROM homework_table WHERE hw_id=?`, homeworkID);
+        if (rows.affectedRows == 1) {
+            return true;
+        }else {
+            return false;
+        }
     };
 }

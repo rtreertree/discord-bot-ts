@@ -39,7 +39,7 @@ class sqlHandler {
     constructor() {
     }
     //Create connection;
-    createConnection = async () => {
+    createConnection = () => {
         return mysql.createConnection(this.config);
     };
     ThisFunctinForClearTheDatabase = async (connection) => {
@@ -96,6 +96,10 @@ class sqlHandler {
             }
         });
         return userhomework;
+    };
+    deleteHomework = async (connection, homeworkID) => {
+        const [rows, fields] = await connection.query(`DELETE FROM homework_table WHERE hw_id=?`, homeworkID);
+        console.log(rows);
     };
 }
 exports.sqlHandler = sqlHandler;

@@ -6,8 +6,6 @@ dotenv.config();
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageReactionAdd from "./listeners/messageReactionAdd";
-//import Commands
-
 
 
 console.log("Starting . . .")
@@ -19,19 +17,15 @@ const app_id = process.env.APP_ID;
 const client: Client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildMessages
     ]
 });
 
 ready(client);
 interactionCreate(client);
-// messageReactionAdd(client);
-
-client.on("messageReactionAdd", async (reaction: any, user) => {
-    if (!(reaction.message.author.id === user.id)){
-        //Do whatever you like with it
-        console.log(reaction.message)
-    };
-});
+messageReactionAdd(client);
 
 client.login(token);
 
