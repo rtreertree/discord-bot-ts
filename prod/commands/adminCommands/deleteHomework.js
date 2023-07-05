@@ -4,7 +4,7 @@ exports.deleteHomework = void 0;
 const discord_js_1 = require("discord.js");
 const sqlhandler_1 = require("../../sqlhandler");
 exports.deleteHomework = {
-    name: "delhw",
+    name: "removehw",
     description: "delete a homework by id",
     type: discord_js_1.ApplicationCommandType.ChatInput,
     options: [
@@ -17,7 +17,6 @@ exports.deleteHomework = {
     ],
     run: async (client, interaction) => {
         const homeworkID = interaction.options.get("id", true).value;
-        console.log(homeworkID);
         await interaction.deferReply();
         const handler = new sqlhandler_1.sqlHandler();
         const connection = await handler.createConnection();

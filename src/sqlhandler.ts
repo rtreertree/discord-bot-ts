@@ -1,4 +1,5 @@
 import * as mysql from "mysql2/promise";
+import * as sql from "mysql2";
 import { generate } from "short-uuid";
 
 export interface homeworkConfig {
@@ -27,6 +28,11 @@ export interface user {
     done_homework: string;
     undone_homework: string;
     user_settings: string;
+}
+
+export enum errorType {
+    INCORRECT_DATE = 0,
+    ID_NOT_FOUND = 0,
 }
 
 export class sqlHandler {
@@ -58,7 +64,7 @@ export class sqlHandler {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);
     };
 
-    public addHomework = async (connection: mysql.Connection, homework: homeworkConfig): Promise<returnhomework>=> {
+    public addHomework = async (connection: mysql.Connection, homework: homeworkConfig): Promise<returnhomework | errorType>=> {
         homework.due_date = homework.due_date.split('/').join(',').split('-').join(',').split(',').reverse().join("-");
         const hw_uuid = generate();
         const [id, fields]: any = await connection.query("INSERT INTO homework_table(hw_subject,hw_name,hw_description,hw_page,hw_duedate,hw_uuid) VALUES (?,?,?,?,?,?);",
@@ -108,11 +114,21 @@ export class sqlHandler {
         return userhomework;
     };
 
+    public getHomeworkById = async (connection: mysql.Connection, homeworkID: Number): Promise<homeworkConfig | null> => {
+        const [rows, fields]: any = await connection.query(`SELECT * FROM homework_table WHERE hw_id=?;`, homeworkID);
+        if (rows.length != 0) {
+            return {
+                name: rows[0].hw_name,
+                subject: rows[0].hw_subject,
+                description: rows[0].hw_description,
+                page: rows[0].hw_page,
+                due_date: rows[0].hw_duedate
+            };
+        }
+        return null;
+    };
 
-    // ["1","2","3"]
 
-
-    //NEED FIX: add for user_table edit;
     public deleteHomework = async (connection: mysql.Connection, homeworkID: Number): Promise<boolean> => {
         const [rows, fields]: any = await connection.query(`DELETE FROM homework_table WHERE hw_id=?`, homeworkID);
         if (rows.affectedRows == 1) {

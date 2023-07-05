@@ -26,7 +26,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sqlHandler = void 0;
 const mysql = __importStar(require("mysql2/promise"));
 const short_uuid_1 = require("short-uuid");
-;
 class sqlHandler {
     config = {
         "host": "193.31.31.159",
@@ -67,7 +66,6 @@ class sqlHandler {
     };
     updateHomeworkMessage = async (connection, message_id, hw_uuid) => {
         const [id, fields] = await connection.query(`UPDATE homework_table SET hw_messageID=? WHERE hw_uuid=?`, [message_id, hw_uuid]);
-        console.log(id, fields);
         return id;
     };
     registerUser = async (connection, username, userid) => {
@@ -97,8 +95,19 @@ class sqlHandler {
         });
         return userhomework;
     };
-    // ["1","2","3"]
-    //NEED FIX: add for user_table edit;
+    getHomeworkById = async (connection, homeworkID) => {
+        const [rows, fields] = await connection.query(`SELECT * FROM homework_table WHERE hw_id=?;`, homeworkID);
+        if (rows.length != 0) {
+            return {
+                name: rows[0].hw_name,
+                subject: rows[0].hw_subject,
+                description: rows[0].hw_description,
+                page: rows[0].hw_page,
+                due_date: rows[0].hw_duedate
+            };
+        }
+        return null;
+    };
     deleteHomework = async (connection, homeworkID) => {
         const [rows, fields] = await connection.query(`DELETE FROM homework_table WHERE hw_id=?`, homeworkID);
         if (rows.affectedRows == 1) {

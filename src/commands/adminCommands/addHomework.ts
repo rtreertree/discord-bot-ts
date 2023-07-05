@@ -1,6 +1,6 @@
 import { CommandInteraction,ModalSubmitInteraction,EmbedBuilder, Client, ApplicationCommandType, TextInputBuilder, ActionRowBuilder, ModalBuilder, TextInputStyle} from "discord.js";
 import {Command} from "../../Command"
-import { sqlHandler, homeworkConfig } from "../../sqlhandler"
+import { sqlHandler, homeworkConfig, errorType} from "../../sqlhandler"
 
 export const addHomework: Command = {
     name: "addhw",
@@ -90,7 +90,7 @@ export const addHomework: Command = {
 
             const handler = new sqlHandler();
             const connection = await handler.createConnection();
-            const res = await handler.addHomework(connection, homework);
+            const res: any = await handler.addHomework(connection, homework);
 
             confirm_embed.setFooter({text: `ID: ${res.homework_id}`});
             const response: any = await interaction.channel?.send({

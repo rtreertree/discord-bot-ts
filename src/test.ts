@@ -30,13 +30,8 @@ const homework3: homeworkConfig= {
 
 (async () => {
     const connection = await handler.createConnection();
-    await handler.ThisFunctinForClearTheDatabase(connection);
-    // const [hw1, hw2, hw3] = await Promise.all([
-    //     handler.addHomework(connection, homework1),
-    //     handler.addHomework(connection, homework2),
-    //     handler.addHomework(connection, homework3),
-    // ]);
-    // console.log(hw1, hw2, hw3)
-    // handler.updateHomeworkMessage(connection,"this is a message id","8eCU7ghufGEnMkB8J4fKeW");
-    connection.end();
+    const res = await handler.getHomeworkById(connection, 2);
+    await connection.end();
+    const dueDate = new Date(`${res?.due_date}`);
+    console.log(dueDate.toLocaleDateString());
 })(); 

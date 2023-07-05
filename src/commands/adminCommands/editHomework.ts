@@ -16,6 +16,7 @@ export const editHomework: Command = {
     ],
     run: async (client: Client, interaction : CommandInteraction) => {
         const homeworkID: any = interaction.options.get("id", true).value;
-        
+        const handler = new sqlHandler();
+        const connection = await handler.createConnection();
     }
 };
