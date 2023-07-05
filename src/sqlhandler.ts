@@ -1,15 +1,6 @@
 import * as mysql from "mysql2/promise";
 import { generate } from "short-uuid";
 
-export interface sqlConfig {
-    host: string;
-    user: string;
-    password: string;
-    database: string;
-    connectionLimit: number;
-    multipleStatements: boolean;
-};
-
 export interface homeworkConfig {
     name: string;
     subject: string;
@@ -39,7 +30,7 @@ export interface user {
 }
 
 export class sqlHandler {
-    private config: sqlConfig = {
+    private config: mysql.ConnectionOptions = {
         "host": "193.31.31.159",
         "user": "u99291_ZYAmDB3Fub",
         "password": "K6ye@NiwvX+mOf1Ct+zugZAB",
@@ -86,7 +77,6 @@ export class sqlHandler {
 
     public updateHomeworkMessage = async (connection: mysql.Connection, message_id: string, hw_uuid: string):Promise<any> => {
         const [id, fields]: any = await connection.query(`UPDATE homework_table SET hw_messageID=? WHERE hw_uuid=?`, [message_id, hw_uuid]);
-        console.log(id, fields);
         return id;
     };
 
@@ -119,10 +109,19 @@ export class sqlHandler {
     };
 
 
+    // ["1","2","3"]
+
+
     //NEED FIX: add for user_table edit;
     public deleteHomework = async (connection: mysql.Connection, homeworkID: Number): Promise<boolean> => {
         const [rows, fields]: any = await connection.query(`DELETE FROM homework_table WHERE hw_id=?`, homeworkID);
         if (rows.affectedRows == 1) {
+            connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"?"','');`, homeworkID);
+            connection.query(`
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',,',',');
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',]',']');
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'[,','[');
+            `);
             return true;
         }else {
             return false;

@@ -19,12 +19,18 @@ exports.deleteHomework = {
         const homeworkID = interaction.options.get("id", true).value;
         console.log(homeworkID);
         await interaction.deferReply();
-        const reply = await interaction.fetchReply();
         const handler = new sqlhandler_1.sqlHandler();
         const connection = await handler.createConnection();
         const result = await handler.deleteHomework(connection, homeworkID);
-        interaction.editReply({
-            content: "DeleteHomework"
-        });
+        if (result) {
+            interaction.editReply({
+                content: `Deleted homework id = ${homeworkID} by ${interaction.user}}`
+            });
+        }
+        else {
+            interaction.editReply({
+                content: `Homework selected by id = ${homeworkID} was not found!!`
+            });
+        }
     }
 };

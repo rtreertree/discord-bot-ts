@@ -97,9 +97,22 @@ class sqlHandler {
         });
         return userhomework;
     };
+    // ["1","2","3"]
+    //NEED FIX: add for user_table edit;
     deleteHomework = async (connection, homeworkID) => {
         const [rows, fields] = await connection.query(`DELETE FROM homework_table WHERE hw_id=?`, homeworkID);
-        console.log(rows);
+        if (rows.affectedRows == 1) {
+            connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"?"','');`, homeworkID);
+            connection.query(`
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',,',',');
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',]',']');
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'[,','[');
+            `);
+            return true;
+        }
+        else {
+            return false;
+        }
     };
 }
 exports.sqlHandler = sqlHandler;

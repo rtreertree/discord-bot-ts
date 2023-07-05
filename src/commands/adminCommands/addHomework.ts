@@ -8,7 +8,6 @@ export const addHomework: Command = {
     type: ApplicationCommandType.ChatInput,
     run: async (client: Client, interaction : CommandInteraction) => {
         const add_hw_modal = new ModalBuilder().setCustomId("add_hw_modal").setTitle("Add new homework");
-    
         const subjectInput = new TextInputBuilder()
         .setCustomId("subject_input")
         .setLabel("Subject")

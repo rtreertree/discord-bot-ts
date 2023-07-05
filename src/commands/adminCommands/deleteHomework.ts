@@ -3,7 +3,7 @@ import { sqlHandler } from "../../sqlhandler"
 import { Command } from "../../Command"
 
 export const deleteHomework: Command = {
-    name: "delhw",
+    name: "removehw",
     description: "delete a homework by id",
     type: ApplicationCommandType.ChatInput,
     options: [
@@ -16,17 +16,22 @@ export const deleteHomework: Command = {
     ],
     run: async (client: Client, interaction : CommandInteraction) => {
         const homeworkID: any = interaction.options.get("id", true).value;
-
-        console.log(homeworkID);
         await interaction.deferReply();
-        const reply = await interaction.fetchReply();
-
+        
         const handler = new sqlHandler();
         const connection = await handler.createConnection();
         const result = await handler.deleteHomework(connection, homeworkID);
 
-        interaction.editReply({
-            content: "DeleteHomework"
-        });
+
+        if (result){
+            interaction.editReply({
+                content: `Deleted homework id = ${homeworkID} by ${interaction.user}}`
+            });
+        }else {
+            interaction.editReply({
+                content: `Homework selected by id = ${homeworkID} was not found!!`
+            });
+        }
+
     }
 };
