@@ -7,6 +7,6 @@ export const settings: Command = {
     description: "View/Change your settings",
     type: ApplicationCommandType.ChatInput,
     run: async (client: Client, interaction : CommandInteraction) => {
-        
+        return;
     }
 }
