@@ -23,9 +23,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sqlHandler = void 0;
+exports.sqlHandler = exports.errorType = void 0;
 const mysql = __importStar(require("mysql2/promise"));
 const short_uuid_1 = require("short-uuid");
+var errorType;
+(function (errorType) {
+    errorType[errorType["INCORRECT_DATE"] = 0] = "INCORRECT_DATE";
+    errorType[errorType["ID_NOT_FOUND"] = 0] = "ID_NOT_FOUND";
+})(errorType = exports.errorType || (exports.errorType = {}));
 class sqlHandler {
     config = {
         "host": "193.31.31.159",
@@ -103,10 +108,16 @@ class sqlHandler {
                 subject: rows[0].hw_subject,
                 description: rows[0].hw_description,
                 page: rows[0].hw_page,
-                due_date: rows[0].hw_duedate
+                due_date: (new Date(`${rows[0].hw_duedate}`)).toLocaleDateString()
             };
         }
-        return null;
+        return {
+            name: "400",
+            subject: "400",
+            description: "400",
+            page: "400",
+            due_date: "400"
+        };
     };
     deleteHomework = async (connection, homeworkID) => {
         const [rows, fields] = await connection.query(`DELETE FROM homework_table WHERE hw_id=?`, homeworkID);
@@ -122,6 +133,16 @@ class sqlHandler {
         else {
             return false;
         }
+    };
+    updateHomework = async (connection, homework, homeworkID) => {
+        await connection.query(`UPDATE homework_table SET hw_description=?,hw_name=?,hw_page=?,hw_duedate=?,hw_subject=? WHERE hw_id = ?`, [
+            homework.description,
+            homework.name,
+            homework.page,
+            homework.due_date,
+            homework.subject,
+            homeworkID
+        ]);
     };
 }
 exports.sqlHandler = sqlHandler;

@@ -114,7 +114,7 @@ export class sqlHandler {
         return userhomework;
     };
 
-    public getHomeworkById = async (connection: mysql.Connection, homeworkID: Number): Promise<homeworkConfig | null> => {
+    public getHomeworkById = async (connection: mysql.Connection, homeworkID: Number): Promise<homeworkConfig> => {
         const [rows, fields]: any = await connection.query(`SELECT * FROM homework_table WHERE hw_id=?;`, homeworkID);
         if (rows.length != 0) {
             return {
@@ -122,12 +122,17 @@ export class sqlHandler {
                 subject: rows[0].hw_subject,
                 description: rows[0].hw_description,
                 page: rows[0].hw_page,
-                due_date: rows[0].hw_duedate
+                due_date: (new Date(`${rows[0].hw_duedate}`)).toLocaleDateString()
             };
         }
-        return null;
+        return {
+            name: "400",
+            subject: "400",
+            description: "400",
+            page: "400",
+            due_date: "400"
+        }
     };
-
 
     public deleteHomework = async (connection: mysql.Connection, homeworkID: Number): Promise<boolean> => {
         const [rows, fields]: any = await connection.query(`DELETE FROM homework_table WHERE hw_id=?`, homeworkID);
@@ -142,5 +147,16 @@ export class sqlHandler {
         }else {
             return false;
         }
+    };
+
+    public updateHomework = async (connection: mysql.Connection, homework: homeworkConfig, homeworkID: Number) => {
+        await connection.query(`UPDATE homework_table SET hw_description=?,hw_name=?,hw_page=?,hw_duedate=?,hw_subject=? WHERE hw_id = ?`, [
+            homework.description,
+            homework.name,
+            homework.page,
+            homework.due_date,
+            homework.subject,
+            homeworkID
+        ])
     };
 }

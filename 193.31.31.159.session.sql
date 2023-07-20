@@ -1,1 +1,1 @@
-SELECT * FROM user_table
+UPDATE homework_table SET hw_description = '', hw_name = '', hw_page = '', hw_duedate = '', hw_subject = '' WHERE hw_id = 0
