@@ -30,6 +30,7 @@ export interface user {
     user_settings: string;
 }
 
+
 export enum errorType {
     INCORRECT_DATE = 0,
     ID_NOT_FOUND = 0,
@@ -159,4 +160,9 @@ export class sqlHandler {
             homeworkID
         ])
     };
+
+    public setUsersettings = async (connection: mysql.Connection, userid:string, settings: boolean) => {
+        const [rows, fields]:any = await connection.query(`UPDATE user_table SET user_setting=? WHERE user_id=?`, [settings, userid]);
+        console.log(rows);
+    }
 }

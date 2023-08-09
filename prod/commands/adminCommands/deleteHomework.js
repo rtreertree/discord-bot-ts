@@ -21,6 +21,7 @@ exports.deleteHomework = {
         const handler = new sqlhandler_1.sqlHandler();
         const connection = await handler.createConnection();
         const result = await handler.deleteHomework(connection, homeworkID);
+        connection.end();
         if (result) {
             interaction.editReply({
                 content: `Deleted homework id = ${homeworkID} by ${interaction.user}}`

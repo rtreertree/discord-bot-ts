@@ -7,4 +7,5 @@ const addHomework_1 = require("./commands/adminCommands/addHomework");
 const deleteHomework_1 = require("./commands/adminCommands/deleteHomework");
 const dropAll_1 = require("./commands/adminCommands/dropAll");
 const editHomework_1 = require("./commands/adminCommands/editHomework");
-exports.Commands = [ping_1.ping, register_1.register, addHomework_1.addHomework, deleteHomework_1.deleteHomework, dropAll_1.dropall, editHomework_1.editHomework];
+const settings_1 = require("./commands/userCommands/settings");
+exports.Commands = [ping_1.ping, register_1.register, addHomework_1.addHomework, deleteHomework_1.deleteHomework, dropAll_1.dropall, editHomework_1.editHomework, settings_1.settings];

@@ -30,7 +30,7 @@ var errorType;
 (function (errorType) {
     errorType[errorType["INCORRECT_DATE"] = 0] = "INCORRECT_DATE";
     errorType[errorType["ID_NOT_FOUND"] = 0] = "ID_NOT_FOUND";
-})(errorType = exports.errorType || (exports.errorType = {}));
+})(errorType || (exports.errorType = errorType = {}));
 class sqlHandler {
     config = {
         "host": "193.31.31.159",
@@ -143,6 +143,10 @@ class sqlHandler {
             homework.subject,
             homeworkID
         ]);
+    };
+    setUsersettings = async (connection, userid, settings) => {
+        const [rows, fields] = await connection.query(`UPDATE user_table SET user_setting=? WHERE user_id=?`, [settings, userid]);
+        console.log(rows);
     };
 }
 exports.sqlHandler = sqlHandler;

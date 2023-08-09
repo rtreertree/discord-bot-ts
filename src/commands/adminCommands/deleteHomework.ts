@@ -21,6 +21,7 @@ export const deleteHomework: Command = {
         const handler = new sqlHandler();
         const connection = await handler.createConnection();
         const result = await handler.deleteHomework(connection, homeworkID);
+        connection.end();
 
 
         if (result){
