@@ -20,10 +20,21 @@ export const settings: Command = {
     type: ApplicationCommandType.ChatInput,
     run: async (client: Client, interaction: CommandInteraction) => {
         const sendNotification = interaction.options.get('send_notification');
+        await interaction.deferReply();
+
         const handler = new sqlHandler();
         const connection = await handler.createConnection();
-        handler.setUsersettings(connection, interaction.user.id, true);
-        console.log(sendNotification);
+        const isChange = await handler.setUsersettings(connection, interaction.user.id, true);
+        if (isChange) {            
+            interaction.editReply({
+                content: `Setting updated successfully`
+            });
+        } else {
+            interaction.editReply({
+                content: `Setting not updated`
+            });
+        }
+        connection.end();
         return;
     }
 }

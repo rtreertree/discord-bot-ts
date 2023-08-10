@@ -146,7 +146,27 @@ class sqlHandler {
     };
     setUsersettings = async (connection, userid, settings) => {
         const [rows, fields] = await connection.query(`UPDATE user_table SET user_setting=? WHERE user_id=?`, [settings, userid]);
-        console.log(rows);
+        if (rows.affectedRows != 1) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    };
+    listHomeworks = async (connection, userid, filter) => {
+        const [result, homework, duedate] = await Promise.all([
+            connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid),
+            connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid),
+            connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid),
+        ]);
+        console.log(result);
+        if (filter == "all") {
+        }
+        else if (filter == "done") {
+        }
+        else if (filter == "undone") {
+        }
+        ;
     };
 }
 exports.sqlHandler = sqlHandler;

@@ -161,8 +161,30 @@ export class sqlHandler {
         ])
     };
 
-    public setUsersettings = async (connection: mysql.Connection, userid:string, settings: boolean) => {
+    public setUsersettings = async (connection: mysql.Connection, userid:string, settings: boolean): Promise<boolean> => {
         const [rows, fields]:any = await connection.query(`UPDATE user_table SET user_setting=? WHERE user_id=?`, [settings, userid]);
-        console.log(rows);
-    }
+        if (rows.affectedRows != 1) {
+            return false;
+        }else {
+            return true;
+        }
+    };
+
+    public listHomeworks = async (connection: mysql.Connection,userid:string, filter: string) => {
+
+        const [result, homework, duedate]:any = await Promise.all([
+            connection.query(`SELECT * FROM user_table WHERE user_id=?`,userid), 
+            connection.query(`SELECT * FROM user_table WHERE user_id=?`,userid), 
+            connection.query(`SELECT * FROM user_table WHERE user_id=?`,userid), 
+        ]);
+        console.log(result);
+        if (filter == "all") {
+            
+        } else if (filter == "done") {
+
+        } else if (filter == "undone") {
+
+        };
+    };
+
 }

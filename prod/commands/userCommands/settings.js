@@ -21,10 +21,21 @@ exports.settings = {
     type: discord_js_1.ApplicationCommandType.ChatInput,
     run: async (client, interaction) => {
         const sendNotification = interaction.options.get('send_notification');
+        await interaction.deferReply();
         const handler = new sqlhandler_1.sqlHandler();
         const connection = await handler.createConnection();
-        handler.setUsersettings(connection, interaction.user.id, true);
-        console.log(sendNotification);
+        const isChange = await handler.setUsersettings(connection, interaction.user.id, true);
+        if (isChange) {
+            interaction.editReply({
+                content: `Setting updated successfully`
+            });
+        }
+        else {
+            interaction.editReply({
+                content: `Setting not updated`
+            });
+        }
+        connection.end();
         return;
     }
 };

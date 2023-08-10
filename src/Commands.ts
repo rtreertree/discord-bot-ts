@@ -6,5 +6,6 @@ import { deleteHomework } from "./commands/adminCommands/deleteHomework";
 import { dropall } from "./commands/adminCommands/dropAll";
 import { editHomework } from "./commands/adminCommands/editHomework"
 import { settings } from "./commands/userCommands/settings";
+import { listHomework } from "./commands/userCommands/listHomework";
 
-export const Commands: Command[] = [ping, register, addHomework, deleteHomework, dropall, editHomework, settings];
+export const Commands: Command[] = [ping, register, addHomework, deleteHomework, dropall, editHomework, settings, listHomework];
