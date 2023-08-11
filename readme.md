@@ -2,19 +2,19 @@
 Description
 
 ## To-Do ✅
-### [Trello click here](https://trello.com/b/DRe7Qtt4/to-do)
+### [*Trello click here*](https://trello.com/b/DRe7Qtt4/to-do)
 ### Commands
 - Admin commands
-	- [ ] Add homework
-	- [ ] Remove homework
-	- [ ] Edit homework
-	- [ ] Register new user
+	- [x] Add homework
+	- [x] Remove homework
+	- [x] Edit homework
+	- [x] Register new user
 	- [ ] Set users homework status (User mention + Homework ID)
 - User commands
 	- [ ] Get list of homework (All/Done/Undone)
 	- [ ] Get full info of homework by ID
-	- [ ] Change settings
-		- [ ] Send DM notification (Toggle) 
+	- [x] Change settings
+		- [x] Send DM notification (Toggle) 
 	- [ ] Set status of homework (Done/Undone) [SELF]
 
 ### Automation
