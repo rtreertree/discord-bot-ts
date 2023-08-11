@@ -13,8 +13,8 @@ export const listHomework: Command = {
             required: true,
             choices: [
                 {name:"All" , value:"all"},
-                {name:"Undone" , value:"undone_homework"},
-                {name:"Done" , value:"done_homework"},
+                {name:"Done" , value:"done"},
+                {name:"Undone" , value:"undone"},
             ]
         }
     ],
@@ -25,6 +25,5 @@ export const listHomework: Command = {
         const connection = await handler.createConnection();
 
         const res = await handler.listHomeworks(connection, interaction.user.id, filterMode);
-        console.log(filterMode);
     }
 }

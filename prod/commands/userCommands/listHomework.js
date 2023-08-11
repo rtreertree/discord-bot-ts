@@ -14,8 +14,8 @@ exports.listHomework = {
             required: true,
             choices: [
                 { name: "All", value: "all" },
-                { name: "Undone", value: "undone_homework" },
-                { name: "Done", value: "done_homework" },
+                { name: "Done", value: "done" },
+                { name: "Undone", value: "undone" },
             ]
         }
     ],
@@ -25,6 +25,5 @@ exports.listHomework = {
         const handler = new sqlhandler_1.sqlHandler();
         const connection = await handler.createConnection();
         const res = await handler.listHomeworks(connection, interaction.user.id, filterMode);
-        console.log(filterMode);
     }
 };

@@ -65,6 +65,10 @@ export class sqlHandler {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);
     };
 
+    public getDMableUser = async (connection: mysql.Connection) => {
+        return connection.query("SELECT * FROM user_table WHERE user_setting=1");
+    };
+
     public addHomework = async (connection: mysql.Connection, homework: homeworkConfig): Promise<returnhomework | errorType>=> {
         homework.due_date = homework.due_date.split('/').join(',').split('-').join(',').split(',').reverse().join("-");
         const hw_uuid = generate();
@@ -172,12 +176,28 @@ export class sqlHandler {
 
     public listHomeworks = async (connection: mysql.Connection,userid:string, filter: string) => {
 
-        const [result, homework, duedate]:any = await Promise.all([
-            connection.query(`SELECT * FROM user_table WHERE user_id=?`,userid), 
-            connection.query(`SELECT * FROM user_table WHERE user_id=?`,userid), 
-            connection.query(`SELECT * FROM user_table WHERE user_id=?`,userid), 
+        const [[result, fields], [homework, fields2]]:any = await Promise.all([
+            connection.query(`SELECT * FROM user_table WHERE user_id=?`,userid),
+            connection.query(`SELECT * FROM homework_table`),
         ]);
+
         console.log(result);
+        let allHwIds: any[] = []; //Hw ids of all homeworks
+        for (let i = 0; i < homework.length; i++) {
+            allHwIds.push(`${homework[i].hw_id}`);
+        }
+        console.log(allHwIds);
+    
+        let userDoneHwIds: any[] = JSON.parse(result[0].done_homework);
+        let userUndoneHwIds: any[] = JSON.parse(result[0].undone_homework);
+        console.log(userDoneHwIds);
+        console.log(userUndoneHwIds);
+
+        const filteredDone = allHwIds.filter(value => userDoneHwIds.includes(value));
+        const filteredUndone = allHwIds.filter(value => userUndoneHwIds.includes(value));
+        console.log(filteredDone);
+        console.log(filteredUndone);
+        
         if (filter == "all") {
             
         } else if (filter == "done") {
@@ -187,4 +207,4 @@ export class sqlHandler {
         };
     };
 
-}
+};

@@ -54,6 +54,9 @@ class sqlHandler {
     getUserData = async (connection, userid) => {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);
     };
+    getDMableUser = async (connection) => {
+        return connection.query("SELECT * FROM user_table WHERE user_setting=1");
+    };
     addHomework = async (connection, homework) => {
         homework.due_date = homework.due_date.split('/').join(',').split('-').join(',').split(',').reverse().join("-");
         const hw_uuid = (0, short_uuid_1.generate)();
@@ -154,12 +157,24 @@ class sqlHandler {
         }
     };
     listHomeworks = async (connection, userid, filter) => {
-        const [result, homework, duedate] = await Promise.all([
+        const [[result, fields], [homework, fields2]] = await Promise.all([
             connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid),
-            connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid),
-            connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid),
+            connection.query(`SELECT * FROM homework_table`),
         ]);
         console.log(result);
+        let allHwIds = []; //Hw ids of all homeworks
+        for (let i = 0; i < homework.length; i++) {
+            allHwIds.push(`${homework[i].hw_id}`);
+        }
+        console.log(allHwIds);
+        let userDoneHwIds = JSON.parse(result[0].done_homework);
+        let userUndoneHwIds = JSON.parse(result[0].undone_homework);
+        console.log(userDoneHwIds);
+        console.log(userUndoneHwIds);
+        const filteredDone = allHwIds.filter(value => userDoneHwIds.includes(value));
+        const filteredUndone = allHwIds.filter(value => userUndoneHwIds.includes(value));
+        console.log(filteredDone);
+        console.log(filteredUndone);
         if (filter == "all") {
         }
         else if (filter == "done") {
@@ -170,3 +185,4 @@ class sqlHandler {
     };
 }
 exports.sqlHandler = sqlHandler;
+;
