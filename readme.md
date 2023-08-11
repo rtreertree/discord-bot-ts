@@ -11,7 +11,7 @@ Description
 	- [x] Register new user
 	- [ ] Set users homework status (User mention + Homework ID)
 - User commands
-	- [ ] Get list of homework (All/Done/Undone)
+	- [ ] Get list of homework (All/Done/Undone) [*done in sql wait for MJ add discord display!!!*]
 	- [ ] Get full info of homework by ID
 	- [x] Change settings
 		- [x] Send DM notification (Toggle) 

@@ -16,6 +16,13 @@ exports.default = (client) => {
             const handler = new sqlhandler_1.sqlHandler();
             const connection = await handler.createConnection();
             const users = await handler.getDMableUser(connection);
+            for (let i = 0; i < users.length; i++) {
+                const id = users[i]["user_id"];
+                const user = await client.users.fetch(id);
+                console.log(`${user?.id} : ${line}`);
+                user?.send(line);
+            }
+            ;
         });
         await client.application.commands.set(Commands_1.Commands);
         console.log(`${client.user.username} is online`);

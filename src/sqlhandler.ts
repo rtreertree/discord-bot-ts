@@ -17,6 +17,11 @@ export interface userhomework extends homeworkConfig {
     homework_id: string;
 }
 
+export interface displayHomework extends homeworkConfig {
+    homework_id: string;
+    isDone: boolean;
+}
+
 export interface returnhomework {
     homework_id: string;
     homework_uuid: string;
@@ -46,7 +51,7 @@ export class sqlHandler {
         "multipleStatements": true
     };
 
-    constructor (){
+    constructor() {
 
     }
 
@@ -60,38 +65,38 @@ export class sqlHandler {
         await connection.query("truncate homework_table;");
         return;
     }
-    
+
     public getUserData = async (connection: mysql.Connection, userid: string) => {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);
     };
 
     public getDMableUser = async (connection: mysql.Connection) => {
-        return connection.query("SELECT * FROM user_table WHERE user_setting=1");
+        return connection.query("SELECT * FROM user_table WHERE user_setting=1").then(([res, logs]) => res);
     };
 
-    public addHomework = async (connection: mysql.Connection, homework: homeworkConfig): Promise<returnhomework | errorType>=> {
+    public addHomework = async (connection: mysql.Connection, homework: homeworkConfig): Promise<returnhomework | errorType> => {
         homework.due_date = homework.due_date.split('/').join(',').split('-').join(',').split(',').reverse().join("-");
         const hw_uuid = generate();
         const [id, fields]: any = await connection.query("INSERT INTO homework_table(hw_subject,hw_name,hw_description,hw_page,hw_duedate,hw_uuid) VALUES (?,?,?,?,?,?);",
-        [
-            homework.subject,
-            homework.name,
-            homework.description,
-            homework.page,
-            homework.due_date,
-            hw_uuid, []
-        ]);
+            [
+                homework.subject,
+                homework.name,
+                homework.description,
+                homework.page,
+                homework.due_date,
+                hw_uuid, []
+            ]);
         connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,']',',"${id.insertId}"]');`);
         connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework, '[,' , '[');`);
-        return {homework_uuid: hw_uuid, homework_id: id.insertId};
+        return { homework_uuid: hw_uuid, homework_id: id.insertId };
     };
 
-    public updateHomeworkMessage = async (connection: mysql.Connection, message_id: string, hw_uuid: string):Promise<any> => {
+    public updateHomeworkMessage = async (connection: mysql.Connection, message_id: string, hw_uuid: string): Promise<any> => {
         const [id, fields]: any = await connection.query(`UPDATE homework_table SET hw_messageID=? WHERE hw_uuid=?`, [message_id, hw_uuid]);
         return id;
     };
 
-    public registerUser = async (connection: mysql.Connection, username:string, userid:string ): Promise<boolean> => {
+    public registerUser = async (connection: mysql.Connection, username: string, userid: string): Promise<boolean> => {
         try {
             await connection.query(`INSERT INTO user_table(user_id, user_name) VALUES(?,?)`, [userid, username]);
             return true;
@@ -101,7 +106,7 @@ export class sqlHandler {
     };
 
     public getAllUserHomework = async (connection: mysql.Connection, userid: string): Promise<userhomework[]> => {
-        let [[userdone,  userundone], homework]: any = await Promise.all([
+        let [[userdone, userundone], homework]: any = await Promise.all([
             connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid).then(([rows, f]: any) => [rows[0].undone_homework, rows[0].done_homework]),
             connection.query(`SELECT * FROM homework_table`).then(([rows, f]: any) => rows),
         ]);
@@ -149,7 +154,7 @@ export class sqlHandler {
             UPDATE user_table SET undone_homework=REPLACE(undone_homework,'[,','[');
             `);
             return true;
-        }else {
+        } else {
             return false;
         }
     };
@@ -165,46 +170,59 @@ export class sqlHandler {
         ])
     };
 
-    public setUsersettings = async (connection: mysql.Connection, userid:string, settings: boolean): Promise<boolean> => {
-        const [rows, fields]:any = await connection.query(`UPDATE user_table SET user_setting=? WHERE user_id=?`, [settings, userid]);
+    public setUsersettings = async (connection: mysql.Connection, userid: string, settings: boolean): Promise<boolean> => {
+        const [rows, fields]: any = await connection.query(`UPDATE user_table SET user_setting=? WHERE user_id=?`, [settings, userid]);
         if (rows.affectedRows != 1) {
             return false;
-        }else {
+        } else {
             return true;
         }
     };
 
-    public listHomeworks = async (connection: mysql.Connection,userid:string, filter: string) => {
+    public listHomeworks = async (connection: mysql.Connection, userid: string, filter: string) => {
 
-        const [[result, fields], [homework, fields2]]:any = await Promise.all([
-            connection.query(`SELECT * FROM user_table WHERE user_id=?`,userid),
-            connection.query(`SELECT * FROM homework_table`),
+        const [[result, f1], [homework, f2]]: any = await Promise.all([
+            connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid),
+            connection.query(`SELECT hw_id,hw_name,hw_subject,hw_description,hw_page, DATE_FORMAT(hw_duedate, '%d/%m/%Y') FROM homework_table`)
         ]);
 
-        console.log(result);
-        let allHwIds: any[] = []; //Hw ids of all homeworks
-        for (let i = 0; i < homework.length; i++) {
-            allHwIds.push(`${homework[i].hw_id}`);
-        }
-        console.log(allHwIds);
-    
-        let userDoneHwIds: any[] = JSON.parse(result[0].done_homework);
-        let userUndoneHwIds: any[] = JSON.parse(result[0].undone_homework);
-        console.log(userDoneHwIds);
-        console.log(userUndoneHwIds);
+        let userDoneHwIds: string[] = JSON.parse(result[0].done_homework);
+        let userUndoneHwIds: string[] = JSON.parse(result[0].undone_homework);
 
-        const filteredDone = allHwIds.filter(value => userDoneHwIds.includes(value));
-        const filteredUndone = allHwIds.filter(value => userUndoneHwIds.includes(value));
-        console.log(filteredDone);
-        console.log(filteredUndone);
-        
-        if (filter == "all") {
-            
-        } else if (filter == "done") {
+        let allHomeworks: displayHomework[] = [];
 
-        } else if (filter == "undone") {
-
-        };
+        userDoneHwIds.forEach(h => {
+            const id = Number(h);
+            for (let i = 0; i < homework.length; i++) {
+                if (id == homework[i]["hw_id"]) {
+                    allHomeworks.push({
+                        "homework_id": homework[i]["hw_id"],
+                        "name": homework[i]["hw_name"],
+                        "description": homework[i]["hw_description"],
+                        "due_date": homework[i]["DATE_FORMAT(hw_duedate, '%d/%m/%Y')"],
+                        "page": homework[i]["hw_page"],
+                        "subject": homework[i]["hw_subject"],
+                        "isDone": true
+                    });
+                }
+            }
+        });
+        userUndoneHwIds.forEach(h => {
+            const id = Number(h);
+            for (let i = 0; i < homework.length; i++) {
+                if (id == homework[i]["hw_id"]) {
+                    allHomeworks.push({
+                        "homework_id": homework[i]["hw_id"],
+                        "name": homework[i]["hw_name"],
+                        "description": homework[i]["hw_description"],
+                        "due_date": homework[i]["DATE_FORMAT(hw_duedate, '%d/%m/%Y')"],
+                        "page": homework[i]["hw_page"],
+                        "subject": homework[i]["hw_subject"],
+                        "isDone": false
+                    });
+                }
+            }
+        });
+        return allHomeworks;
     };
-
 };

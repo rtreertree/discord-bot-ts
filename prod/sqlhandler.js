@@ -55,7 +55,7 @@ class sqlHandler {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);
     };
     getDMableUser = async (connection) => {
-        return connection.query("SELECT * FROM user_table WHERE user_setting=1");
+        return connection.query("SELECT * FROM user_table WHERE user_setting=1").then(([res, logs]) => res);
     };
     addHomework = async (connection, homework) => {
         homework.due_date = homework.due_date.split('/').join(',').split('-').join(',').split(',').reverse().join("-");
@@ -157,31 +157,46 @@ class sqlHandler {
         }
     };
     listHomeworks = async (connection, userid, filter) => {
-        const [[result, fields], [homework, fields2]] = await Promise.all([
+        const [[result, f1], [homework, f2]] = await Promise.all([
             connection.query(`SELECT * FROM user_table WHERE user_id=?`, userid),
-            connection.query(`SELECT * FROM homework_table`),
+            connection.query(`SELECT hw_id,hw_name,hw_subject,hw_description,hw_page, DATE_FORMAT(hw_duedate, '%d/%m/%Y') FROM homework_table`)
         ]);
-        console.log(result);
-        let allHwIds = []; //Hw ids of all homeworks
-        for (let i = 0; i < homework.length; i++) {
-            allHwIds.push(`${homework[i].hw_id}`);
-        }
-        console.log(allHwIds);
         let userDoneHwIds = JSON.parse(result[0].done_homework);
         let userUndoneHwIds = JSON.parse(result[0].undone_homework);
-        console.log(userDoneHwIds);
-        console.log(userUndoneHwIds);
-        const filteredDone = allHwIds.filter(value => userDoneHwIds.includes(value));
-        const filteredUndone = allHwIds.filter(value => userUndoneHwIds.includes(value));
-        console.log(filteredDone);
-        console.log(filteredUndone);
-        if (filter == "all") {
-        }
-        else if (filter == "done") {
-        }
-        else if (filter == "undone") {
-        }
-        ;
+        let allHomeworks = [];
+        userDoneHwIds.forEach(h => {
+            const id = Number(h);
+            for (let i = 0; i < homework.length; i++) {
+                if (id == homework[i]["hw_id"]) {
+                    allHomeworks.push({
+                        "homework_id": homework[i]["hw_id"],
+                        "name": homework[i]["hw_name"],
+                        "description": homework[i]["hw_description"],
+                        "due_date": homework[i]["DATE_FORMAT(hw_duedate, '%d/%m/%Y')"],
+                        "page": homework[i]["hw_page"],
+                        "subject": homework[i]["hw_subject"],
+                        "isDone": true
+                    });
+                }
+            }
+        });
+        userUndoneHwIds.forEach(h => {
+            const id = Number(h);
+            for (let i = 0; i < homework.length; i++) {
+                if (id == homework[i]["hw_id"]) {
+                    allHomeworks.push({
+                        "homework_id": homework[i]["hw_id"],
+                        "name": homework[i]["hw_name"],
+                        "description": homework[i]["hw_description"],
+                        "due_date": homework[i]["DATE_FORMAT(hw_duedate, '%d/%m/%Y')"],
+                        "page": homework[i]["hw_page"],
+                        "subject": homework[i]["hw_subject"],
+                        "isDone": false
+                    });
+                }
+            }
+        });
+        console.log(allHomeworks);
     };
 }
 exports.sqlHandler = sqlHandler;

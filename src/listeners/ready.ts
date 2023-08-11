@@ -10,14 +10,16 @@ export default (client: Client): void => {
         }
         let rl = createInterface(process.stdin, process.stdout);
         rl.on('line', async (line: string) => {
-            // const user = await client.users.fetch('461529192094367744');
-            // console.log(`${user?.id} : ${line}`);
-            // user?.send(line);
-
             const handler = new sqlHandler();
             const connection = await handler.createConnection();
 
-            const users = await handler.getDMableUser(connection);
+            const users: any = await handler.getDMableUser(connection);
+            for (let i = 0; i < users.length; i++) {
+                const id = users[i]["user_id"]
+                const user = await client.users.fetch(id);
+                console.log(`${user?.id} : ${line}`);
+                user?.send(line);
+            };
         });
 
         await client.application.commands.set(Commands)
