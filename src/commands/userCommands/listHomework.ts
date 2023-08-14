@@ -18,6 +18,7 @@ export const listHomework: Command = {
             ]
         }
     ],
+
     type: ApplicationCommandType.ChatInput,
     run: async (client: Client, interaction: CommandInteraction) => {
         const filterMode:any = interaction.options.get('mode', true).value;
@@ -25,5 +26,12 @@ export const listHomework: Command = {
         const connection = await handler.createConnection();
 
         const res = await handler.listHomeworks(connection, interaction.user.id, filterMode);
+        
+        if(res.length == 0){
+            interaction.reply("You don't have any homeworks");
+        }
+
+        
+
     }
 }
