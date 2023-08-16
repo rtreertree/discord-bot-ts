@@ -9,4 +9,17 @@ const dropAll_1 = require("./commands/adminCommands/dropAll");
 const editHomework_1 = require("./commands/adminCommands/editHomework");
 const settings_1 = require("./commands/userCommands/settings");
 const listHomework_1 = require("./commands/userCommands/listHomework");
-exports.Commands = [ping_1.ping, register_1.register, addHomework_1.addHomework, deleteHomework_1.deleteHomework, dropAll_1.dropall, editHomework_1.editHomework, settings_1.settings, listHomework_1.listHomework];
+const getInfo_1 = require("./commands/userCommands/getInfo");
+const mark_1 = require("./commands/userCommands/mark");
+exports.Commands = [
+    ping_1.ping,
+    register_1.register,
+    addHomework_1.addHomework,
+    deleteHomework_1.deleteHomework,
+    dropAll_1.dropall,
+    editHomework_1.editHomework,
+    settings_1.settings,
+    listHomework_1.listHomework,
+    getInfo_1.getInfo,
+    mark_1.mark,
+];

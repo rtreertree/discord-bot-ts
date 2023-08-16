@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, ClientOptions } from "discord.js";
+import { Client, GatewayIntentBits, ClientOptions, User } from "discord.js";
 import * as dotenv from "dotenv";
 dotenv.config();
 

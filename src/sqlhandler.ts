@@ -73,7 +73,6 @@ export class sqlHandler {
     public getDMableUser = async (connection: mysql.Connection) => {
         return connection.query("SELECT * FROM user_table WHERE user_setting=1").then(([res, logs]) => res);
     };
-
     public addHomework = async (connection: mysql.Connection, homework: homeworkConfig): Promise<returnhomework | errorType> => {
         homework.due_date = homework.due_date.split('/').join(',').split('-').join(',').split(',').reverse().join("-");
         const hw_uuid = generate();
@@ -157,6 +156,24 @@ export class sqlHandler {
         } else {
             return false;
         }
+    };
+
+    public markHomework = async (connection: mysql.Connection,userid: string,homeworkID: Number, status: boolean)=> {
+
+        if (status) {
+            connection.query(`
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"${homeworkID}"','') WHERE user_id=${userid};
+            UPDATE user_table SET done_homework=REPLACE(done_homework,']',',"${homeworkID}"') WHERE user_id=${userid};
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',,',',');
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',]',']');
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'[,','[');
+            UPDATE user_table SET done_homework=REPLACE(done_homework,',,',',');
+            UPDATE user_table SET done_homework=REPLACE(done_homework,',]',']');
+            UPDATE user_table SET done_homework=REPLACE(done_homework,'[,','[');
+            `);
+        }
+        // ["1",,"3"]
+        return true;
     };
 
     public updateHomework = async (connection: mysql.Connection, homework: homeworkConfig, homeworkID: Number) => {

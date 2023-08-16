@@ -137,6 +137,22 @@ class sqlHandler {
             return false;
         }
     };
+    markHomework = async (connection, userid, homeworkID, status) => {
+        if (status) {
+            connection.query(`
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"${homeworkID}"','') WHERE user_id=${userid};
+            UPDATE user_table SET done_homework=REPLACE(done_homework,']',',"${homeworkID}"') WHERE user_id=${userid};
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',,',',');
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',]',']');
+            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'[,','[');
+            UPDATE user_table SET done_homework=REPLACE(done_homework,',,',',');
+            UPDATE user_table SET done_homework=REPLACE(done_homework,',]',']');
+            UPDATE user_table SET done_homework=REPLACE(done_homework,'[,','[');
+            `);
+        }
+        // ["1",,"3"]
+        return true;
+    };
     updateHomework = async (connection, homework, homeworkID) => {
         await connection.query(`UPDATE homework_table SET hw_description=?,hw_name=?,hw_page=?,hw_duedate=?,hw_subject=? WHERE hw_id = ?`, [
             homework.description,
@@ -196,7 +212,7 @@ class sqlHandler {
                 }
             }
         });
-        console.log(allHomeworks);
+        return allHomeworks;
     };
 }
 exports.sqlHandler = sqlHandler;
