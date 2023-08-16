@@ -30,7 +30,7 @@ var errorType;
 (function (errorType) {
     errorType[errorType["INCORRECT_DATE"] = 0] = "INCORRECT_DATE";
     errorType[errorType["ID_NOT_FOUND"] = 0] = "ID_NOT_FOUND";
-})(errorType || (exports.errorType = errorType = {}));
+})(errorType = exports.errorType || (exports.errorType = {}));
 class sqlHandler {
     config = {
         "host": "193.31.31.159",

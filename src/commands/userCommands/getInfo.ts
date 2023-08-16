@@ -1,4 +1,4 @@
-import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 import { sqlHandler, user } from "../../sqlhandler"
 import { Command } from "../../Command"
 
@@ -18,18 +18,30 @@ export const getInfo: Command = {
         const homeworkID: any = interaction.options.get('id', true).value;
         const handler = new sqlHandler();
         const connection = await handler.createConnection();
-        await interaction.deferReply();
+        await interaction.deferReply({ephemeral: true});
         const res = await handler.getHomeworkById(connection, homeworkID);
 
         if (res.due_date == "400") {
             interaction.editReply({
                 content: `Homework not found`
             });
-        }else {
-            interaction.editReply({
-                content: `${interaction.user.displayAvatarURL()}`
-            });
+            return;
         }
-        console.log(res);
+
+        const display = new EmbedBuilder()
+            .setColor('#00874d')
+            .setTitle(res.name)
+            .setDescription(res.description)
+            .addFields(
+                { name: 'Subject', value: res.subject, inline: true },
+                { name: 'Page', value: res.page, inline: true},
+                { name: 'Due Date', value: res.due_date },
+            )
+            .setFooter({text: `Homework ID: ${homeworkID}`});
+
+        interaction.editReply({
+            embeds: [display],
+        });
+        connection.end();
     }
 }

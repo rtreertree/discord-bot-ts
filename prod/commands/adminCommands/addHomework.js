@@ -60,6 +60,14 @@ exports.addHomework = {
                 submitted.fields.getTextInputValue("page_input"),
                 submitted.fields.getTextInputValue("due_input"),
             ]);
+            const year = Number(due_input.split('/').join(',').split('-').join(',').split(',')[2]);
+            if (year > new Date().getFullYear()) {
+                interaction.reply({
+                    content: `Invalid date`,
+                    ephemeral: true
+                });
+                return;
+            }
             const confirm_embed = new discord_js_1.EmbedBuilder()
                 .setColor("Green")
                 .setTitle(`${subject_input} : ${name_input}`)

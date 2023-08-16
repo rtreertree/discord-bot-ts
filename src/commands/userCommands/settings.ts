@@ -1,4 +1,4 @@
-import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, StringSelectMenuBuilder , StringSelectMenuOptionBuilder , ButtonBuilder , ButtonStyle , EmbedBuilder, AnyComponentBuilder, InteractionCollector } from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, AnyComponentBuilder, InteractionCollector, Message, MessagePayload } from "discord.js";
 import { sqlHandler, user } from "../../sqlhandler"
 import { Command } from "../../Command"
 
@@ -25,56 +25,115 @@ export const settings: Command = {
 
         const userpfp = interaction.user.displayAvatarURL();
         const settingsEmbed = new EmbedBuilder()
-            .setTitle('Settings')
-            .setDescription('Select the setting you want to change')
-            .setColor('#00874d')
+            .setTitle("Settings")
+            .setDescription("Select the setting you want to change")
+            .setColor("#00874d")
             .setThumbnail(userpfp);
 
         const settingsSelect = new StringSelectMenuBuilder()
-            .setCustomId('settingsselect')
-            .setPlaceholder('Select a setting')
+            .setCustomId("settingsselect")
+            .setPlaceholder("Select a setting")
+            .setMinValues(1)
+            .setMaxValues(1)
             .addOptions(
                 new StringSelectMenuOptionBuilder()
-                    .setLabel('Send DM Notification')
-                    .setValue('send_dm_notification'),
+                    .setLabel("Send DM Notification")
+                    .setValue("send_dm_notification"),
                 new StringSelectMenuOptionBuilder()
-                    .setLabel('Placeholder')
-                    .setValue('placeholder'),
+                    .setLabel("Placeholder")
+                    .setValue("placeholder"),
             )
 
         const buttonOn = new ButtonBuilder()
-            .setCustomId('on')
-            .setLabel('Enable')
+            .setCustomId("on")
+            .setLabel("Enable")
             .setStyle(ButtonStyle.Success);
 
         const buttonOff = new ButtonBuilder()
-            .setCustomId('off')
-            .setLabel('Disable')
+            .setCustomId("off")
+            .setLabel("Disable")
             .setStyle(ButtonStyle.Danger);
-        
-        const actionrow = new ActionRowBuilder<StringSelectMenuBuilder>()
+
+        const buttonCancel = new ButtonBuilder()
+            .setCustomId("cancel")
+            .setLabel("Cancel")
+            .setStyle(ButtonStyle.Secondary);
+
+        const selectrow = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(settingsSelect);
 
-        const actionrow2 = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(buttonOn, buttonOff);
+        const buttonrow = new ActionRowBuilder<ButtonBuilder>()
+            .addComponents(buttonCancel, buttonOn, buttonOff);
 
-        const response = await interaction.reply({
-            embeds: [settingsEmbed],
-            components: [actionrow, actionrow2],
+        const response = await interaction.deferReply({
             ephemeral: true,
         });
 
+        await interaction.editReply({
+            embeds: [settingsEmbed],
+            components: [selectrow],
+        });
+
         const collectorFilter = (i: any) => i.user.id === interaction.user.id;
-        
-        try {
-            const confirmation = await response.awaitMessageComponent({ filter: collectorFilter, time: 60000 });
-            console.log(confirmation);
-            if (confirmation.customId === 'settingsselect') {
-                const selected = confirmation.valueOf();
-                console.log(selected);
-            } else if (confirmation.customId === 'cancel') {
-            
+        /*
+            {
+                "dmnotification": "true",
+                "placeholder": "placeholder"
             }
+        */
+        try {
+            const selectCollection: any = await response.awaitMessageComponent({ filter: collectorFilter, time: 120000 });
+            if (selectCollection.values[0] === "send_dm_notification") {
+                const send_dm_notification_embed = new EmbedBuilder()
+                    .setTitle("Send DM Notification")
+                    .setDescription("Eneble/Disable Bot to send you DM notification")
+                    .setColor("#00874d")
+                    .setThumbnail(userpfp);
+                selectCollection.reply({
+                    content: "**Bot is thinking ...**",
+                    emmephral: true
+                });
+                selectCollection.deleteReply();
+                await interaction.editReply({
+                    embeds: [send_dm_notification_embed],
+                    components: [buttonrow]
+                });
+
+                const buttonCollection: any = await response.awaitMessageComponent({ filter: collectorFilter, time: 60000 });
+
+                const handler = new sqlHandler();
+                const connection = await handler.createConnection();
+
+                if (buttonCollection.customId === "cancel") {
+                    await interaction.editReply({
+                        content: "Cancelled",
+                        components: [],
+                        embeds: []
+                    });
+                } else if (buttonCollection.customId === "on") {
+                    await handler.setUsersettings(connection, interaction.user.id, true);
+                    await interaction.editReply({
+                        content: "Send DM Notification **Enabled**",
+                        components: [],
+                        embeds: []
+                    });
+                } else if (buttonCollection.customId === "off") {
+                    await handler.setUsersettings(connection, interaction.user.id, false);
+                    await interaction.editReply({
+                        content: "Send DM Notification **Disabled**",
+                        components: [],
+                        embeds: []
+                    });
+                }
+                connection.end();
+
+            } else if (selectCollection.values[0] === "placeholder") {
+                await interaction.editReply({
+                    content: "Lol idiot why click placeholder"
+                });
+            }
+
+
         } catch (e) {
             await interaction.editReply({ content: 'Confirmation not received within 1 minute, cancelling', components: [] });
         }

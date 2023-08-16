@@ -19,18 +19,23 @@ exports.getInfo = {
         const homeworkID = interaction.options.get('id', true).value;
         const handler = new sqlhandler_1.sqlHandler();
         const connection = await handler.createConnection();
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         const res = await handler.getHomeworkById(connection, homeworkID);
         if (res.due_date == "400") {
             interaction.editReply({
                 content: `Homework not found`
             });
+            return;
         }
-        else {
-            interaction.editReply({
-                content: `${interaction.user.displayAvatarURL()}`
-            });
-        }
-        console.log(res);
+        const display = new discord_js_1.EmbedBuilder()
+            .setColor('#00874d')
+            .setTitle(res.name)
+            .setDescription(res.description)
+            .addFields({ name: 'Subject', value: res.subject, inline: true }, { name: 'Page', value: res.page, inline: true }, { name: 'Due Date', value: res.due_date })
+            .setFooter({ text: `Homework ID: ${homeworkID}` });
+        interaction.editReply({
+            embeds: [display],
+        });
+        connection.end();
     }
 };

@@ -159,7 +159,6 @@ export class sqlHandler {
     };
 
     public markHomework = async (connection: mysql.Connection,userid: string,homeworkID: Number, status: boolean)=> {
-
         if (status) {
             connection.query(`
             UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"${homeworkID}"','') WHERE user_id=${userid};
