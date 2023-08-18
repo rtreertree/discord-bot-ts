@@ -28,8 +28,21 @@ exports.mark = {
     run: async (client, interaction) => {
         const homeworkID = interaction.options.get('id', true).value;
         const status = interaction.options.get('status', true).value;
+        const isDone = status == "done" ? true : false;
         const handler = new sqlhandler_1.sqlHandler();
         const connection = await handler.createConnection();
-        handler.markHomework(connection, interaction.user.id, homeworkID, true);
+        const res = await handler.markHomework(connection, interaction.user.id, homeworkID, isDone);
+        if (res) {
+            interaction.reply({
+                content: "Homework marked as " + status + "!",
+                ephemeral: true
+            });
+        }
+        else {
+            interaction.reply({
+                content: "Homework does not exist",
+                ephemeral: true
+            });
+        }
     }
 };

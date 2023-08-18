@@ -105,21 +105,21 @@ export const settings: Command = {
                 const connection = await handler.createConnection();
 
                 if (buttonCollection.customId === "cancel") {
-                    await interaction.editReply({
+                    interaction.editReply({
                         content: "Cancelled",
                         components: [],
                         embeds: []
                     });
                 } else if (buttonCollection.customId === "on") {
-                    await handler.setUsersettings(connection, interaction.user.id, true);
-                    await interaction.editReply({
+                    handler.setUsersettings(connection, interaction.user.id, true);
+                    interaction.editReply({
                         content: "Send DM Notification **Enabled**",
                         components: [],
                         embeds: []
                     });
                 } else if (buttonCollection.customId === "off") {
-                    await handler.setUsersettings(connection, interaction.user.id, false);
-                    await interaction.editReply({
+                    handler.setUsersettings(connection, interaction.user.id, false);
+                    interaction.editReply({
                         content: "Send DM Notification **Disabled**",
                         components: [],
                         embeds: []
@@ -128,7 +128,7 @@ export const settings: Command = {
                 connection.end();
 
             } else if (selectCollection.values[0] === "placeholder") {
-                await interaction.editReply({
+                interaction.editReply({
                     content: "Lol idiot why click placeholder"
                 });
             }

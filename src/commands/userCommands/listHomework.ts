@@ -1,35 +1,90 @@
-import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 import { sqlHandler, user } from "../../sqlhandler"
 import { Command } from "../../Command"
 
 export const listHomework: Command = {
-    name: "list",
-    description: "See your all homework",
-    options: [
-        {
-            name: "mode",
-            description: "filter homeworks by a tag",
-            type: ApplicationCommandOptionType.String,
-            required: true,
-            choices: [
-                { name: "All", value: "all" },
-                { name: "Done", value: "done" },
-                { name: "Undone", value: "undone" },
-            ]
-        }
-    ],
-
-    type: ApplicationCommandType.ChatInput,
-    run: async (client: Client, interaction: CommandInteraction) => {
-        const filterMode: any = interaction.options.get('mode', true).value;
-        const handler = new sqlHandler();
-        const connection = await handler.createConnection();
-
-        const res = await handler.listHomeworks(connection, interaction.user.id, filterMode);
-
-        connection.end();
-        return;
+  name: "list",
+  description: "See your all homework",
+  options: [
+    {
+      name: "mode",
+      description: "filter homeworks by a tag",
+      type: ApplicationCommandOptionType.String,
+      required: true,
+      choices: [
+        { name: "Both", value: "both" },
+        { name: "Done", value: "done" },
+        { name: "Undone", value: "undone" },
+      ]
     }
+  ],
+
+  type: ApplicationCommandType.ChatInput,
+  run: async (client: Client, interaction: CommandInteraction) => {
+    const filterMode: any = interaction.options.get("mode", true).value;
+    const handler = new sqlHandler();
+    const connection = await handler.createConnection();
+
+    const res = await handler.listHomeworks(connection, interaction.user.id, filterMode);
+    console.log(res);
+
+    connection.end();
+
+    const reply = await interaction.deferReply({
+      ephemeral: false
+    });
+
+    const listDone_embed = new EmbedBuilder()
+      .setAuthor({ name: `${interaction.user.username}'s List`, iconURL: interaction.user.displayAvatarURL() })
+      .setColor("#30d002") // Green
+      .setTitle("Completed Homeworks")
+      .setTimestamp();
+
+    const listUndone_embed = new EmbedBuilder()
+      .setAuthor({ name: `${interaction.user.username}'s List`, iconURL: interaction.user.displayAvatarURL() })
+      .setColor("#e80001") // Red
+      .setTitle("Incomplete Homeworks")
+      .setTimestamp();
+
+    let countDone = 0;
+    let countUndone = 0;
+    res.forEach((info: any) => {
+      if (info.isDone) {
+        listDone_embed.addFields(
+          { name: `${info.subject} : ${info.name} | [ID:${info.homework_id}]`, value: `Page ${info.page} | Due on ${info.due_date}`, inline: false }
+        );
+        countDone++;
+      } else {
+        listUndone_embed.addFields(
+          { name: `${info.subject} : ${info.name} | [ID:${info.homework_id}]`, value: `Page ${info.page} | Due on ${info.due_date}`, inline: false }
+        );
+        countUndone++;
+      }
+    });
+  
+    if (countDone === 0) {
+      listDone_embed.setDescription("`You have no completed homeworks`");
+    }
+    if (countUndone === 0) {
+      listUndone_embed.setDescription("`You have no incomplete homeworks`");
+    }
+      
+    if (filterMode === "both") {
+      await interaction.editReply({
+      embeds: [listDone_embed, listUndone_embed]
+    });
+    } else if (filterMode === "done") {
+      await interaction.editReply({
+      embeds: [listDone_embed]
+    });
+    } else if (filterMode === "undone") {
+      await interaction.editReply({
+      embeds: [listUndone_embed]
+    });
+    }
+
+    return;
+  }
 }
 
 /*

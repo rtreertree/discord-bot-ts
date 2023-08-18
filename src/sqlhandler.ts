@@ -159,19 +159,28 @@ export class sqlHandler {
     };
 
     public markHomework = async (connection: mysql.Connection,userid: string,homeworkID: Number, status: boolean)=> {
+        const fix = `
+        UPDATE user_table SET undone_homework=REPLACE(undone_homework,',,',',');
+        UPDATE user_table SET undone_homework=REPLACE(undone_homework,',]',']');
+        UPDATE user_table SET undone_homework=REPLACE(undone_homework,'[,','[');
+        UPDATE user_table SET done_homework=REPLACE(done_homework,',,',',');
+        UPDATE user_table SET done_homework=REPLACE(done_homework,',]',']');
+        UPDATE user_table SET done_homework=REPLACE(done_homework,'[,','[');
+        `
         if (status) {
-            connection.query(`
-            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"${homeworkID}"','') WHERE user_id=${userid};
-            UPDATE user_table SET done_homework=REPLACE(done_homework,']',',"${homeworkID}"') WHERE user_id=${userid};
-            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',,',',');
-            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',]',']');
-            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'[,','[');
-            UPDATE user_table SET done_homework=REPLACE(done_homework,',,',',');
-            UPDATE user_table SET done_homework=REPLACE(done_homework,',]',']');
-            UPDATE user_table SET done_homework=REPLACE(done_homework,'[,','[');
-            `);
+            const [rows, fields]:any = await connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"${homeworkID}"','') WHERE user_id=${userid};`);
+            if(rows["changedRows"] != 0){
+                connection.query(`UPDATE user_table SET done_homework=REPLACE(done_homework,']',',"${homeworkID}"]') WHERE user_id=${userid};`)
+            }
+            console.log(rows["changedRows"]);
+        } else {
+            const [rows, fields]:any = await connection.query(`UPDATE user_table SET done_homework=REPLACE(done_homework,'"${homeworkID}"','') WHERE user_id=${userid};`);
+            if(rows["changedRows"] != 0){
+                connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,']',',"${homeworkID}"]') WHERE user_id=${userid};`)
+            }
+            console.log(rows["changedRows"]);
         }
-        // ["1",,"3"]
+        connection.query(fix);
         return true;
     };
 

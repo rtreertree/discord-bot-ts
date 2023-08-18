@@ -30,7 +30,7 @@ var errorType;
 (function (errorType) {
     errorType[errorType["INCORRECT_DATE"] = 0] = "INCORRECT_DATE";
     errorType[errorType["ID_NOT_FOUND"] = 0] = "ID_NOT_FOUND";
-})(errorType = exports.errorType || (exports.errorType = {}));
+})(errorType || (exports.errorType = errorType = {}));
 class sqlHandler {
     config = {
         "host": "193.31.31.159",
@@ -138,19 +138,29 @@ class sqlHandler {
         }
     };
     markHomework = async (connection, userid, homeworkID, status) => {
+        const fix = `
+        UPDATE user_table SET undone_homework=REPLACE(undone_homework,',,',',');
+        UPDATE user_table SET undone_homework=REPLACE(undone_homework,',]',']');
+        UPDATE user_table SET undone_homework=REPLACE(undone_homework,'[,','[');
+        UPDATE user_table SET done_homework=REPLACE(done_homework,',,',',');
+        UPDATE user_table SET done_homework=REPLACE(done_homework,',]',']');
+        UPDATE user_table SET done_homework=REPLACE(done_homework,'[,','[');
+        `;
         if (status) {
-            connection.query(`
-            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"${homeworkID}"','') WHERE user_id=${userid};
-            UPDATE user_table SET done_homework=REPLACE(done_homework,']',',"${homeworkID}"') WHERE user_id=${userid};
-            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',,',',');
-            UPDATE user_table SET undone_homework=REPLACE(undone_homework,',]',']');
-            UPDATE user_table SET undone_homework=REPLACE(undone_homework,'[,','[');
-            UPDATE user_table SET done_homework=REPLACE(done_homework,',,',',');
-            UPDATE user_table SET done_homework=REPLACE(done_homework,',]',']');
-            UPDATE user_table SET done_homework=REPLACE(done_homework,'[,','[');
-            `);
+            const [rows, fields] = await connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"${homeworkID}"','') WHERE user_id=${userid};`);
+            if (rows["changedRows"] != 0) {
+                connection.query(`UPDATE user_table SET done_homework=REPLACE(done_homework,']',',"${homeworkID}"]') WHERE user_id=${userid};`);
+            }
+            console.log(rows["changedRows"]);
         }
-        // ["1",,"3"]
+        else {
+            const [rows, fields] = await connection.query(`UPDATE user_table SET done_homework=REPLACE(done_homework,'"${homeworkID}"','') WHERE user_id=${userid};`);
+            if (rows["changedRows"] != 0) {
+                connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,']',',"${homeworkID}"]') WHERE user_id=${userid};`);
+            }
+            console.log(rows["changedRows"]);
+        }
+        connection.query(fix);
         return true;
     };
     updateHomework = async (connection, homework, homeworkID) => {

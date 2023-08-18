@@ -9,6 +9,7 @@ import { settings } from "./commands/userCommands/settings";
 import { listHomework } from "./commands/userCommands/listHomework";
 import { getInfo } from "./commands/userCommands/getInfo";
 import { mark } from "./commands/userCommands/mark";
+import { botsetup } from "./commands/adminCommands/botsetup";
 
 export const Commands: Command[] = [
     ping, 
@@ -21,5 +22,6 @@ export const Commands: Command[] = [
     listHomework,
     getInfo,
     mark,
+    botsetup,
     
 ];

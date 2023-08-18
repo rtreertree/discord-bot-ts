@@ -49,10 +49,6 @@ exports.addHomework = {
             return;
         });
         if (submitted) {
-            submitted.reply({
-                content: `Added to assignment`,
-                ephemeral: true
-            });
             let [subject_input, name_input, description_input, page_input, due_input] = await Promise.all([
                 submitted.fields.getTextInputValue("subject_input"),
                 submitted.fields.getTextInputValue("name_input"),
@@ -62,17 +58,20 @@ exports.addHomework = {
             ]);
             const year = Number(due_input.split('/').join(',').split('-').join(',').split(',')[2]);
             if (year > new Date().getFullYear()) {
-                interaction.reply({
+                submitted.reply({
                     content: `Invalid date`,
-                    ephemeral: true
+                    ephemeral: true,
                 });
                 return;
             }
+            submitted.reply({
+                content: `Added to assignment`,
+            });
             const confirm_embed = new discord_js_1.EmbedBuilder()
                 .setColor("Green")
                 .setTitle(`${subject_input} : ${name_input}`)
                 .setDescription(`${description_input}`)
-                .addFields({ name: "Page", value: `${page_input}` }, { name: "Due", value: `${due_input}`, inline: true })
+                .addFields({ name: "Page", value: `${page_input}` }, { name: "Due", value: `${due_input.split('/').join(',').split('-').join(',').split(',').join('/')}`, inline: true })
                 .setTimestamp();
             let homework = {
                 name: subject_input,

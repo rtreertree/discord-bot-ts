@@ -62,6 +62,12 @@ exports.settings = {
             components: [selectrow],
         });
         const collectorFilter = (i) => i.user.id === interaction.user.id;
+        /*
+            {
+                "dmnotification": "true",
+                "placeholder": "placeholder"
+            }
+        */
         try {
             const selectCollection = await response.awaitMessageComponent({ filter: collectorFilter, time: 120000 });
             if (selectCollection.values[0] === "send_dm_notification") {
@@ -83,24 +89,24 @@ exports.settings = {
                 const handler = new sqlhandler_1.sqlHandler();
                 const connection = await handler.createConnection();
                 if (buttonCollection.customId === "cancel") {
-                    await interaction.editReply({
+                    interaction.editReply({
                         content: "Cancelled",
                         components: [],
                         embeds: []
                     });
                 }
                 else if (buttonCollection.customId === "on") {
-                    await handler.setUsersettings(connection, interaction.user.id, true);
-                    await interaction.editReply({
-                        content: "Send DM Notification ***Enabled***",
+                    handler.setUsersettings(connection, interaction.user.id, true);
+                    interaction.editReply({
+                        content: "Send DM Notification **Enabled**",
                         components: [],
                         embeds: []
                     });
                 }
                 else if (buttonCollection.customId === "off") {
-                    await handler.setUsersettings(connection, interaction.user.id, false);
-                    await interaction.editReply({
-                        content: "Send DM Notification ***Disabled***",
+                    handler.setUsersettings(connection, interaction.user.id, false);
+                    interaction.editReply({
+                        content: "Send DM Notification **Disabled**",
                         components: [],
                         embeds: []
                     });
@@ -108,7 +114,7 @@ exports.settings = {
                 connection.end();
             }
             else if (selectCollection.values[0] === "placeholder") {
-                await interaction.editReply({
+                interaction.editReply({
                     content: "Lol idiot why click placeholder"
                 });
             }
