@@ -51,6 +51,9 @@ class sqlHandler {
         await connection.query("truncate homework_table;");
         return;
     };
+    newServerInit = async (connection, guild) => {
+        guild.channels.cache.get("1112972144452833320")?.delete();
+    };
     getUserData = async (connection, userid) => {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);
     };

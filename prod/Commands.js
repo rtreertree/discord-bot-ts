@@ -11,6 +11,7 @@ const settings_1 = require("./commands/userCommands/settings");
 const listHomework_1 = require("./commands/userCommands/listHomework");
 const getInfo_1 = require("./commands/userCommands/getInfo");
 const mark_1 = require("./commands/userCommands/mark");
+const botsetup_1 = require("./commands/adminCommands/botsetup");
 exports.Commands = [
     ping_1.ping,
     register_1.register,
@@ -22,4 +23,5 @@ exports.Commands = [
     listHomework_1.listHomework,
     getInfo_1.getInfo,
     mark_1.mark,
+    botsetup_1.botsetup,
 ];

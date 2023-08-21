@@ -33,6 +33,7 @@ dotenv.config();
 const ready_1 = __importDefault(require("./listeners/ready"));
 const interactionCreate_1 = __importDefault(require("./listeners/interactionCreate"));
 const messageReactionAdd_1 = __importDefault(require("./listeners/messageReactionAdd"));
+const inviteListener_1 = __importDefault(require("./listeners/inviteListener"));
 console.log("Starting . . .");
 const token = process.env.TOKEN;
 const guild_id = process.env.GUILD_ID;
@@ -48,4 +49,5 @@ const client = new discord_js_1.Client({
 (0, ready_1.default)(client);
 (0, interactionCreate_1.default)(client);
 (0, messageReactionAdd_1.default)(client);
+(0, inviteListener_1.default)(client);
 client.login(token);

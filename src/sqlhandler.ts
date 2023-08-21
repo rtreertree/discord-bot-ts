@@ -1,6 +1,7 @@
 import * as mysql from "mysql2/promise";
 import * as sql from "mysql2";
 import { generate } from "short-uuid";
+import { Guild } from "discord.js";
 
 export interface homeworkConfig {
     name: string;
@@ -65,6 +66,11 @@ export class sqlHandler {
         await connection.query("truncate homework_table;");
         return;
     }
+
+    public newServerInit = async (connection: mysql.Connection, guild: Guild | any) => {
+        guild.channels.cache.get("1112972144452833320")?.delete();
+    }
+
 
     public getUserData = async (connection: mysql.Connection, userid: string) => {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);

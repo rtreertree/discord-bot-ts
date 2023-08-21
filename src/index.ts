@@ -6,6 +6,7 @@ dotenv.config();
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import messageReactionAdd from "./listeners/messageReactionAdd";
+import inviteListener from "./listeners/inviteListener";
 
 
 console.log("Starting . . .")
@@ -26,6 +27,8 @@ const client: Client = new Client({
 ready(client);
 interactionCreate(client);
 messageReactionAdd(client);
+inviteListener(client);
+
 
 client.login(token);
 
