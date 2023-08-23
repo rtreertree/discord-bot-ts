@@ -3,11 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.addHomework = void 0;
 const discord_js_1 = require("discord.js");
 const sqlhandler_1 = require("../../sqlhandler");
+const utils_1 = require("../../utils");
 exports.addHomework = {
     name: "addhw",
     description: "Add a homework",
     type: discord_js_1.ApplicationCommandType.ChatInput,
     run: async (client, interaction) => {
+        if (!await (0, utils_1.filterUser)(interaction)) {
+            return;
+        }
         const add_hw_modal = new discord_js_1.ModalBuilder().setCustomId("add_hw_modal").setTitle("Add new homework");
         const subjectInput = new discord_js_1.TextInputBuilder()
             .setCustomId("subject_input")

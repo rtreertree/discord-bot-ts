@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = void 0;
 const discord_js_1 = require("discord.js");
 const sqlhandler_1 = require("../../sqlhandler");
+const utils_1 = require("../../utils");
 exports.register = {
     name: "register",
     description: "Register this user",
@@ -15,7 +16,11 @@ exports.register = {
         }
     ],
     type: discord_js_1.ApplicationCommandType.ChatInput,
+    // setdefaultpermission: ,
     run: async (client, interaction) => {
+        if (!await (0, utils_1.filterUser)(interaction)) {
+            return;
+        }
         const user = interaction.options.getUser("user", false);
         if (user !== null) {
             if (user.bot) {

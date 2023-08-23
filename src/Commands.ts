@@ -23,5 +23,4 @@ export const Commands: Command[] = [
     getInfo,
     mark,
     botsetup,
-    
 ];

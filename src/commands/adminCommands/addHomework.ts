@@ -1,12 +1,16 @@
 import { CommandInteraction, ModalSubmitInteraction, EmbedBuilder, Client, ApplicationCommandType, TextInputBuilder, ActionRowBuilder, ModalBuilder, TextInputStyle } from "discord.js";
 import { Command } from "../../Command"
 import { sqlHandler, homeworkConfig, errorType } from "../../sqlhandler"
+import { filterUser } from "../../utils";
 
 export const addHomework: Command = {
     name: "addhw",
     description: "Add a homework",
     type: ApplicationCommandType.ChatInput,
     run: async (client: Client, interaction: CommandInteraction) => {
+        if (!await filterUser(interaction)){
+            return;
+        }
         const add_hw_modal = new ModalBuilder().setCustomId("add_hw_modal").setTitle("Add new homework");
         const subjectInput = new TextInputBuilder()
             .setCustomId("subject_input")
@@ -59,8 +63,6 @@ export const addHomework: Command = {
         })
 
         if (submitted) {
-
-
             let [subject_input, name_input, description_input, page_input, due_input] = await Promise.all([
                 submitted.fields.getTextInputValue("subject_input"),
                 submitted.fields.getTextInputValue("name_input"),

@@ -1,7 +1,7 @@
-import { User, CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType, ApplicationCommand} from "discord.js";
+import { User, CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType, Role} from "discord.js";
 import { Command } from "../../Command"
 import { sqlHandler, user } from "../../sqlhandler"
-
+import { filterUser } from "../../utils";
 
 export const register: Command = {
     name: "register",
@@ -15,8 +15,12 @@ export const register: Command = {
         }
     ],
     type: ApplicationCommandType.ChatInput,
+    // setdefaultpermission: ,
     run: async (client: Client, interaction : CommandInteraction) => {
-        
+        if (!await filterUser(interaction)){
+            return;
+        }
+
         const user: User | any = interaction.options.getUser("user", false);
 
         if (user !== null) {

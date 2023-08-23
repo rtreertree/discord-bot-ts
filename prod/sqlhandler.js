@@ -51,8 +51,24 @@ class sqlHandler {
         await connection.query("truncate homework_table;");
         return;
     };
-    newServerInit = async (connection, guild) => {
-        guild.channels.cache.get("1112972144452833320")?.delete();
+    oldServerInit = async (connection, guildid) => {
+        const [rows, fields] = await connection.query("SELECT * FROM settings_table WHERE guildID = ?", guildid);
+        if (rows.length == 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    };
+    newServerInit = async (connection, guildid, hwChid, logChid) => {
+        try {
+            const [rows, fields] = await connection.query(`INSERT INTO settings_table(guildID, hwCh, logCh) VALUES(?,?,?)`, [guildid, hwChid, logChid]);
+        }
+        catch (error) {
+            const [rows, fields] = await connection.query(`UPDATE settings_table SET hwCh=?, logCh=? WHERE guildID=?`, [hwChid, logChid, guildid]);
+            return false;
+        }
+        return true;
     };
     getUserData = async (connection, userid) => {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);

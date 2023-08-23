@@ -1,6 +1,8 @@
 import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder} from "discord.js";
 import { homeworkConfig, sqlHandler } from "../../sqlhandler"
 import { Command } from "../../Command"
+import { filterUser } from "../../utils";
+
 
 export const editHomework: Command = {
     name: "edithw",
@@ -15,6 +17,10 @@ export const editHomework: Command = {
         }
     ],
     run: async (client: Client, interaction : CommandInteraction) => {
+        if (!await filterUser(interaction)){
+            return;
+        }
+
         const homeworkID: any = interaction.options.get("id", true).value;
         const handler = new sqlHandler();
         const connection = await handler.createConnection();

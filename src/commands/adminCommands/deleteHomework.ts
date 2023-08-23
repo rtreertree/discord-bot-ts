@@ -1,6 +1,7 @@
 import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType} from "discord.js";
 import { sqlHandler } from "../../sqlhandler"
 import { Command } from "../../Command"
+import { filterUser } from "../../utils";
 
 export const deleteHomework: Command = {
     name: "removehw",
@@ -15,6 +16,10 @@ export const deleteHomework: Command = {
         }
     ],
     run: async (client: Client, interaction : CommandInteraction) => {
+        if (!await filterUser(interaction)){
+            return;
+        }
+
         const homeworkID: any = interaction.options.get("id", true).value;
         await interaction.deferReply();
         

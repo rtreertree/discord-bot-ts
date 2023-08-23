@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ping = void 0;
 const discord_js_1 = require("discord.js");
-const sqlhandler_1 = require("../sqlhandler");
 exports.ping = {
     name: "ping",
     description: "run pong command",
@@ -11,11 +10,21 @@ exports.ping = {
         await interaction.deferReply();
         const reply = await interaction.fetchReply();
         const ping = reply.createdTimestamp - interaction.createdTimestamp;
-        const handler = new sqlhandler_1.sqlHandler();
-        const connection = await handler.createConnection();
-        const res = await handler.newServerInit(connection, interaction.guild);
         interaction.editReply({
             content: `Pong! Client ping: ${ping} ms`
         });
+        const role = interaction.guild?.roles.cache.find(role => role.name == 'admin');
+        const p = await interaction.guild?.members.fetch(interaction.user.id).then((user) => user?.roles.cache.get(role.id));
+        console.log(p);
+        // if (interaction.user == "Owner") {
+        //     return interaction.reply("You can use this command!")
+        // }
+        // if (interaction.user. != "Owner") {
+        //     return interaction.reply("Sorry, an error occurred.")
+        // }
+        // const member = interaction.options.getMember('target');
+        // if (member?.roles.cache.some(role => role.name === 'role name')) {
+        // 
+        // }sda
     }
 };
