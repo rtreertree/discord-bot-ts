@@ -6,6 +6,5 @@ const handler = new sqlHandler();
 
 (async () => {
     const connection = await handler.createConnection();
-    const res = await handler.oldServerInit(connection, '');
-    console.log(res);
+    connection.end();
 })(); 

@@ -1,4 +1,5 @@
-import { CommandInteraction } from "discord.js";
+import { Client, CommandInteraction, Message, MessagePayload, TextBasedChannel } from "discord.js";
+import { sqlHandler } from "./sqlhandler";
 
 export async function filterUser(interaction: CommandInteraction) {
     const role:any = interaction.guild?.roles.cache.find(role => role.name == 'admin')
@@ -10,4 +11,23 @@ export async function filterUser(interaction: CommandInteraction) {
         });
     }
     return p? true : false
+}
+
+export async function sendToUsers(client: Client, userid: string, message: MessagePayload) {
+    const handler = new sqlHandler();
+    const connection = await handler.createConnection();
+    const user = await client.users.fetch("id");
+    user.send(message);
+    connection.end()
+}
+
+export async function logMessage(logChannel: TextBasedChannel, content: MessagePayload) {
+    const handler = new sqlHandler();
+    const connection = await handler.createConnection();
+    try {
+        logChannel.send(content);
+    } catch (error) {
+        console.log(error);
+    }
+    connection.end();
 }
