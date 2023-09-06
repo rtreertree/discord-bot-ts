@@ -28,6 +28,18 @@ exports.botsetup = {
         if (!await (0, utils_1.filterUser)(interaction)) {
             return;
         }
+<<<<<<< HEAD
+=======
+        const role = interaction.guild?.roles.cache.find(role => role.name == 'admin');
+        const p = await interaction.guild?.members.fetch(interaction.user.id).then((user) => user?.roles.cache.get(role.id));
+        if (!p) {
+            interaction.reply({
+                content: "You don't have permission to use this command",
+                ephemeral: true
+            });
+            return;
+        }
+>>>>>>> a52a4c2ab262895673124533fd6ed643f81fbb0d
         const homeworkChannelid = interaction.options.get("homeworkchannel", true).value;
         const logChannelid = interaction.options.get("logchannel", true).value;
         const homeworkChannel = interaction.guild?.channels.cache.find(ch => ch.id == homeworkChannelid);
@@ -44,5 +56,17 @@ exports.botsetup = {
         const connection = await handler.createConnection();
         const res = await handler.newServerInit(connection, `${interaction.guildId}`, `${homeworkChannel}`, `${logChannel}`);
         connection.end();
+        if (res) {
+            interaction.reply({
+                content: "Bot setup success",
+                ephemeral: true
+            });
+        }
+        else {
+            interaction.reply({
+                content: "Bot setup failed please don't try again",
+                ephemeral: true
+            });
+        }
     }
 };

@@ -51,15 +51,6 @@ class sqlHandler {
         await connection.query("truncate homework_table;");
         return;
     };
-    oldServerInit = async (connection, guildid) => {
-        const [rows, fields] = await connection.query("SELECT * FROM settings_table WHERE guildID = ?", guildid);
-        if (rows.length == 0) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    };
     newServerInit = async (connection, guildid, hwChid, logChid) => {
         try {
             const [rows, fields] = await connection.query(`INSERT INTO settings_table(guildID, hwCh, logCh) VALUES(?,?,?)`, [guildid, hwChid, logChid]);

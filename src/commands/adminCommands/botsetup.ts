@@ -27,6 +27,8 @@ export const botsetup: Command = {
         if (!await filterUser(interaction)){
             return;
         }
+
+
         const homeworkChannelid = interaction.options.get("homeworkchannel", true).value;
         const logChannelid = interaction.options.get("logchannel", true).value;
 
@@ -47,5 +49,18 @@ export const botsetup: Command = {
 
         const res = await handler.newServerInit(connection, `${interaction.guildId}`,`${homeworkChannel}`, `${logChannel}`);
         connection.end();
+
+        if (res) {
+            interaction.reply({
+                content: "Bot setup success",
+                ephemeral: true
+            });
+        }else {
+            interaction.reply({
+                content: "Bot setup failed please don't try again",
+                ephemeral: true
+            });
+        }
+
     }
 };

@@ -66,15 +66,6 @@ export class sqlHandler {
         await connection.query("truncate homework_table;");
         return;
     }
-
-    public oldServerInit = async (connection: mysql.Connection, guildid: string): Promise<boolean> => {
-        const [rows, fields]: any = await connection.query("SELECT * FROM settings_table WHERE guildID = ?",guildid);
-        if (rows.length == 0) {
-            return false;
-        } else {
-            return true
-        }
-    }
     
     public newServerInit = async (connection: mysql.Connection, guildid: string, hwChid: string, logChid: string): Promise<boolean> => {
         try {
