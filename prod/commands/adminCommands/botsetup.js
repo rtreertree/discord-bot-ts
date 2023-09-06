@@ -28,8 +28,18 @@ exports.botsetup = {
         if (!await (0, utils_1.filterUser)(interaction)) {
             return;
         }
-        const homeworkChannel = interaction.options.get("homeworkchannel", true).value;
-        const logChannel = interaction.options.get("logchannel", true).value;
+        const homeworkChannelid = interaction.options.get("homeworkchannel", true).value;
+        const logChannelid = interaction.options.get("logchannel", true).value;
+        const homeworkChannel = interaction.guild?.channels.cache.find(ch => ch.id == homeworkChannelid);
+        const logChannel = interaction.guild?.channels.cache.find(ch => ch.id == logChannelid);
+        const filter = (homeworkChannel?.type == 0 || homeworkChannel?.type == 10) && (logChannel?.type == 0 || logChannel?.type == 10);
+        if (!filter) {
+            interaction.reply({
+                content: "channel is not a text channel",
+                ephemeral: true
+            });
+            return;
+        }
         const handler = new sqlhandler_1.sqlHandler();
         const connection = await handler.createConnection();
         const res = await handler.newServerInit(connection, `${interaction.guildId}`, `${homeworkChannel}`, `${logChannel}`);
