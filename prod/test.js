@@ -5,5 +5,4 @@ const handler = new sqlhandler_1.sqlHandler();
 (async () => {
     const connection = await handler.createConnection();
     connection.end();
-    // console.log();
 })();

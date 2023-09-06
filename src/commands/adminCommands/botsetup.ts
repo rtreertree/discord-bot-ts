@@ -1,7 +1,7 @@
-import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType, PermissionFlagsBits, GuildBasedChannel, ChannelType } from "discord.js";
+import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType, PermissionFlagsBits, Guild, ChannelType, TextBasedChannel } from "discord.js";
 import { sqlHandler } from "../../sqlhandler"
 import { Command } from "../../Command"
-import { filterUser } from "../../utils";
+import { filterUser, logMessage } from "../../utils";
 
 export const botsetup: Command = {
     name: "botsetup",
@@ -50,17 +50,20 @@ export const botsetup: Command = {
         const res = await handler.newServerInit(connection, `${interaction.guildId}`,`${homeworkChannel}`, `${logChannel}`);
         connection.end();
 
+
         if (res) {
             interaction.reply({
                 content: "Bot setup success",
                 ephemeral: true
             });
-        }else {
+            logMessage(interaction.guild as Guild, `**[BOT_SETUP]** ${interaction.user} Has setup the bot for this server\n> Homework channel: ${homeworkChannel}\n> Log channel: ${logChannel}`);
+        } else {
             interaction.reply({
-                content: "Bot setup failed please don't try again",
+                content: "Server infomation updated",
                 ephemeral: true
             });
-        }
+            logMessage(interaction.guild as Guild, `**[BOT_SETUP]** ${interaction.user} Has updated the bot's server settings\n> Homework channel: ${homeworkChannel}\n> Log channel: ${logChannel}`);
 
+        }
     }
 };

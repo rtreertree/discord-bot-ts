@@ -60,6 +60,16 @@ exports.addHomework = {
                 submitted.fields.getTextInputValue("page_input"),
                 submitted.fields.getTextInputValue("due_input"),
             ]);
+            const dateFilter = new Date(due_input);
+            console.log(dateFilter.toString());
+            // @ts-ignore
+            if (dateFilter == "Invalid Date") {
+                submitted.reply({
+                    content: `Invalid date`,
+                    ephemeral: true,
+                });
+                return;
+            }
             const year = Number(due_input.split('/').join(',').split('-').join(',').split(',')[2]);
             if (year > new Date().getFullYear()) {
                 submitted.reply({
@@ -70,6 +80,7 @@ exports.addHomework = {
             }
             submitted.reply({
                 content: `Added to assignment`,
+                ephemeral: true,
             });
             const confirm_embed = new discord_js_1.EmbedBuilder()
                 .setColor("Green")
@@ -93,6 +104,7 @@ exports.addHomework = {
             });
             await handler.updateHomeworkMessage(connection, response.id, res.homework_uuid);
             connection.end();
+            (0, utils_1.logMessage)(interaction.guild, `**[ADD_HW]** ${interaction.user.username} added a new homework with\n> ID: ${res.homework_id}`);
         }
     }
 };

@@ -1,7 +1,7 @@
-import { CommandInteraction, ModalSubmitInteraction, EmbedBuilder, Client, ApplicationCommandType, TextInputBuilder, ActionRowBuilder, ModalBuilder, TextInputStyle } from "discord.js";
+import { CommandInteraction, ModalSubmitInteraction, EmbedBuilder, Client, ApplicationCommandType, TextInputBuilder, ActionRowBuilder, ModalBuilder, TextInputStyle, Guild} from "discord.js";
 import { Command } from "../../Command"
 import { sqlHandler, homeworkConfig, errorType } from "../../sqlhandler"
-import { filterUser } from "../../utils";
+import { filterUser, logMessage } from "../../utils";
 
 export const addHomework: Command = {
     name: "addhw",
@@ -70,6 +70,16 @@ export const addHomework: Command = {
                 submitted.fields.getTextInputValue("page_input"),
                 submitted.fields.getTextInputValue("due_input"),
             ]);
+            
+            const dateFilter = new Date(due_input);
+            console.log(dateFilter.toString())
+            if (dateFilter == "Invalid Date") {
+                submitted.reply({
+                    content: `Invalid date`,
+                    ephemeral: true,
+                });
+                return;
+            }
 
             const year = Number(due_input.split('/').join(',').split('-').join(',').split(',')[2]);
             if (year > new Date().getFullYear()) {
@@ -82,6 +92,7 @@ export const addHomework: Command = {
 
             submitted.reply({
                 content: `Added to assignment`,
+                ephemeral: true,
             });
 
             const confirm_embed = new EmbedBuilder()
@@ -112,6 +123,8 @@ export const addHomework: Command = {
             });
             await handler.updateHomeworkMessage(connection, response.id, res.homework_uuid);
             connection.end();
+
+            logMessage(interaction.guild as Guild, `**[ADD_HW]** ${interaction.user.username} added a new homework with\n> ID: ${res.homework_id}`);
         }
     }
 };

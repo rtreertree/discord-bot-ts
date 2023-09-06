@@ -52,6 +52,8 @@ class sqlHandler {
         return;
     };
     newServerInit = async (connection, guildid, hwChid, logChid) => {
+        hwChid = hwChid.replace(/[<#>]/g, '');
+        logChid = logChid.replace(/[<#>]/g, '');
         try {
             const [rows, fields] = await connection.query(`INSERT INTO settings_table(guildID, hwCh, logCh) VALUES(?,?,?)`, [guildid, hwChid, logChid]);
         }
@@ -60,6 +62,15 @@ class sqlHandler {
             return false;
         }
         return true;
+    };
+    getLogChannelId = async (connection, guildid) => {
+        try {
+            const [rows, fields] = await connection.query(`SELECT logCh FROM settings_table WHERE guildID=?`, [guildid]);
+            return rows[0].logCh;
+        }
+        catch (error) {
+            return "error";
+        }
     };
     getUserData = async (connection, userid) => {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);

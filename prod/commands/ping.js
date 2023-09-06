@@ -16,15 +16,5 @@ exports.ping = {
         const role = interaction.guild?.roles.cache.find(role => role.name == 'admin');
         const p = await interaction.guild?.members.fetch(interaction.user.id).then((user) => user?.roles.cache.get(role.id));
         console.log(p);
-        // if (interaction.user == "Owner") {
-        //     return interaction.reply("You can use this command!")
-        // }
-        // if (interaction.user. != "Owner") {
-        //     return interaction.reply("Sorry, an error occurred.")
-        // }
-        // const member = interaction.options.getMember('target');
-        // if (member?.roles.cache.some(role => role.name === 'role name')) {
-        // 
-        // }sda
     }
 };

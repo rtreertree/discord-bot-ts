@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, Message, MessagePayload, TextBasedChannel } from "discord.js";
+import { Client, CommandInteraction, Guild, Message, MessagePayload, TextBasedChannel, TextChannel } from "discord.js";
 import { sqlHandler } from "./sqlhandler";
 
 export async function filterUser(interaction: CommandInteraction) {
@@ -21,11 +21,23 @@ export async function sendToUsers(client: Client, userid: string, message: Messa
     connection.end()
 }
 
-export async function logMessage(logChannel: TextBasedChannel, content: MessagePayload) {
+
+export async function logMessage(guild: Guild, content: string) {
     const handler = new sqlHandler();
     const connection = await handler.createConnection();
+
+    const logID = await handler.getLogChannelId( connection, guild.id as string);
+    if (logID == "error") {
+        console.log(`[LOG_ERROR] ${guild.name} does not have a log channel`);
+        console.log(`[LOG_ERROR] ${content}`);
+        return;
+    }
+    console.log(logID);
+    const logChannel: TextChannel = guild.channels.cache.get(logID as string) as TextChannel;
+    console.log(logChannel);
+
     try {
-        logChannel.send(content);
+        logChannel?.send(content);
     } catch (error) {
         console.log(error);
     }
