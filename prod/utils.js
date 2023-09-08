@@ -25,15 +25,13 @@ exports.sendToUsers = sendToUsers;
 async function logMessage(guild, content) {
     const handler = new sqlhandler_1.sqlHandler();
     const connection = await handler.createConnection();
-    const logID = await handler.getLogChannelId(connection, guild.id);
+    const logID = await handler.getChannelId(connection, guild.id, "logCh");
     if (logID == "error") {
         console.log(`[LOG_ERROR] ${guild.name} does not have a log channel`);
         console.log(`[LOG_ERROR] ${content}`);
         return;
     }
-    console.log(logID);
     const logChannel = guild.channels.cache.get(logID);
-    console.log(logChannel);
     try {
         logChannel?.send(content);
     }

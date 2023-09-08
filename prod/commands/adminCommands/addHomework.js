@@ -1,9 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addHomework = void 0;
 const discord_js_1 = require("discord.js");
 const sqlhandler_1 = require("../../sqlhandler");
 const utils_1 = require("../../utils");
+const moment_1 = __importDefault(require("moment"));
 exports.addHomework = {
     name: "addhw",
     description: "Add a homework",
@@ -60,20 +64,19 @@ exports.addHomework = {
                 submitted.fields.getTextInputValue("page_input"),
                 submitted.fields.getTextInputValue("due_input"),
             ]);
-            const dateFilter = new Date(due_input);
-            console.log(dateFilter.toString());
-            // @ts-ignore
-            if (dateFilter == "Invalid Date") {
+            const dateFilter = (0, moment_1.default)(due_input, "DD-MM-YYYY");
+            console.log(dateFilter.isValid());
+            if (dateFilter.toString() == "Invalid Date") {
                 submitted.reply({
-                    content: `Invalid date`,
+                    content: `**[ERROR]** Invalid date please use DD-MM-YYYY format (Code:1)`,
                     ephemeral: true,
                 });
                 return;
             }
             const year = Number(due_input.split('/').join(',').split('-').join(',').split(',')[2]);
-            if (year > new Date().getFullYear()) {
+            if (year > new Date().getFullYear() + 2) {
                 submitted.reply({
-                    content: `Invalid date`,
+                    content: `**[ERROR]** Invalid date please use DD-MM-YYYY format (Code:2)`,
                     ephemeral: true,
                 });
                 return;
@@ -99,7 +102,18 @@ exports.addHomework = {
             const connection = await handler.createConnection();
             const res = await handler.addHomework(connection, homework);
             confirm_embed.setFooter({ text: `ID: ${res.homework_id}` });
-            const response = await interaction.channel?.send({
+            const homeworkChannelid = await handler.getChannelId(connection, interaction.guildId, "hwCh");
+            if (homeworkChannelid == "error") {
+                console.log(`[ADDHOMEWORK_ERROR] can not get information from "${interaction.guild?.name}"`);
+                return;
+            }
+            const homeworkChannel = interaction.guild?.channels.cache.get(homeworkChannelid);
+            if (!homeworkChannel) {
+                console.log(`[ADDHOMEWORK_ERROR] can not get channel from "${interaction.guild?.name}"`);
+                return;
+            }
+            // Send homework to channel
+            const response = await homeworkChannel.send({
                 embeds: [confirm_embed],
             });
             await handler.updateHomeworkMessage(connection, response.id, res.homework_uuid);

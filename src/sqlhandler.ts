@@ -81,14 +81,15 @@ export class sqlHandler {
         return true;
     }
 
-    public getLogChannelId = async (connection: mysql.Connection, guildid: string): Promise<string> => {
+    public getChannelId = async (connection: mysql.Connection, guildid: string, channel: string): Promise<string> => {
         try {
-            const [rows, fields]: any = await connection.query(`SELECT logCh FROM settings_table WHERE guildID=?`, [guildid]);
-            return rows[0].logCh;
+            const [rows, fields]: any = await connection.query(`SELECT * FROM settings_table WHERE guildID=?`, [guildid]);
+            return rows[0][channel];
         } catch (error) {
             return "error";
         }
     };
+
 
     public getUserData = async (connection: mysql.Connection, userid: string) => {
         return connection.query("SELECT * FROM user_table WHERE user_id = ?", userid).then(([rows, fields]) => rows);

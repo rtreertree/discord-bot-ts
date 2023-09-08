@@ -63,10 +63,10 @@ class sqlHandler {
         }
         return true;
     };
-    getLogChannelId = async (connection, guildid) => {
+    getChannelId = async (connection, guildid, channel) => {
         try {
-            const [rows, fields] = await connection.query(`SELECT logCh FROM settings_table WHERE guildID=?`, [guildid]);
-            return rows[0].logCh;
+            const [rows, fields] = await connection.query(`SELECT * FROM settings_table WHERE guildID=?`, [guildid]);
+            return rows[0][channel];
         }
         catch (error) {
             return "error";
