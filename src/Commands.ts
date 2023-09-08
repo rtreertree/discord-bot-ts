@@ -8,7 +8,9 @@ import { editHomework } from "./commands/adminCommands/editHomework"
 import { settings } from "./commands/userCommands/settings";
 import { listHomework } from "./commands/userCommands/listHomework";
 import { getInfo } from "./commands/userCommands/getInfo";
-import { mark } from "./commands/userCommands/mark";
+import { done } from "./commands/userCommands/done";
+import { undodone } from "./commands/userCommands/undoDone";
+import { setstatus } from "./commands/adminCommands/setstatus";
 import { botsetup } from "./commands/adminCommands/botsetup";
 
 export const Commands: Command[] = [
@@ -21,6 +23,8 @@ export const Commands: Command[] = [
     settings, 
     listHomework,
     getInfo,
-    mark,
+    done,
+    undodone,
+    setstatus,
     botsetup,
 ];

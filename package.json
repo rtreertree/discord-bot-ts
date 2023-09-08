@@ -4,6 +4,7 @@
   "description": "",
   "main": "prod/index.js",
   "scripts": {
+    "start": "tsc && node .",
     "test": "node prod/test.js",
     "build": "tsc",
     "prod": "node ."

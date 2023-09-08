@@ -172,14 +172,18 @@ class sqlHandler {
             if (rows["changedRows"] != 0) {
                 connection.query(`UPDATE user_table SET done_homework=REPLACE(done_homework,']',',"${homeworkID}"]') WHERE user_id=${userid};`);
             }
-            console.log(rows["changedRows"]);
+            else {
+                return false;
+            }
         }
         else {
             const [rows, fields] = await connection.query(`UPDATE user_table SET done_homework=REPLACE(done_homework,'"${homeworkID}"','') WHERE user_id=${userid};`);
             if (rows["changedRows"] != 0) {
                 connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,']',',"${homeworkID}"]') WHERE user_id=${userid};`);
             }
-            console.log(rows["changedRows"]);
+            else {
+                return false;
+            }
         }
         connection.query(fix);
         return true;

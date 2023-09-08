@@ -10,7 +10,9 @@ const editHomework_1 = require("./commands/adminCommands/editHomework");
 const settings_1 = require("./commands/userCommands/settings");
 const listHomework_1 = require("./commands/userCommands/listHomework");
 const getInfo_1 = require("./commands/userCommands/getInfo");
-const mark_1 = require("./commands/userCommands/mark");
+const done_1 = require("./commands/userCommands/done");
+const undoDone_1 = require("./commands/userCommands/undoDone");
+const setstatus_1 = require("./commands/adminCommands/setstatus");
 const botsetup_1 = require("./commands/adminCommands/botsetup");
 exports.Commands = [
     ping_1.ping,
@@ -22,6 +24,8 @@ exports.Commands = [
     settings_1.settings,
     listHomework_1.listHomework,
     getInfo_1.getInfo,
-    mark_1.mark,
+    done_1.done,
+    undoDone_1.undodone,
+    setstatus_1.setstatus,
     botsetup_1.botsetup,
 ];

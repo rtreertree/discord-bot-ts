@@ -196,14 +196,16 @@ export class sqlHandler {
             const [rows, fields]:any = await connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,'"${homeworkID}"','') WHERE user_id=${userid};`);
             if(rows["changedRows"] != 0){
                 connection.query(`UPDATE user_table SET done_homework=REPLACE(done_homework,']',',"${homeworkID}"]') WHERE user_id=${userid};`)
+            } else {
+                return false;
             }
-            console.log(rows["changedRows"]);
         } else {
             const [rows, fields]:any = await connection.query(`UPDATE user_table SET done_homework=REPLACE(done_homework,'"${homeworkID}"','') WHERE user_id=${userid};`);
             if(rows["changedRows"] != 0){
                 connection.query(`UPDATE user_table SET undone_homework=REPLACE(undone_homework,']',',"${homeworkID}"]') WHERE user_id=${userid};`)
+            } else {
+                return false;
             }
-            console.log(rows["changedRows"]);
         }
         connection.query(fix);
         return true;

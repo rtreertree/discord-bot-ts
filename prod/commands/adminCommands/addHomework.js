@@ -40,7 +40,7 @@ exports.addHomework = {
         const dueInput = new discord_js_1.TextInputBuilder()
             .setCustomId("due_input")
             .setLabel("Due date")
-            .setPlaceholder("DD-MM-YYYY")
+            .setPlaceholder("DD/MM/YYYY [in CE/AC (ex. 1/1/2023)]")
             .setStyle(discord_js_1.TextInputStyle.Short);
         const ActionRow1 = new discord_js_1.ActionRowBuilder().addComponents(subjectInput);
         const ActionRow2 = new discord_js_1.ActionRowBuilder().addComponents(nameInput);
@@ -64,19 +64,17 @@ exports.addHomework = {
                 submitted.fields.getTextInputValue("page_input"),
                 submitted.fields.getTextInputValue("due_input"),
             ]);
-            const dateFilter = (0, moment_1.default)(due_input, "DD-MM-YYYY");
-            console.log(dateFilter.isValid());
-            if (dateFilter.toString() == "Invalid Date") {
+            const momentDueDate = (0, moment_1.default)(due_input, "DD-MM-YYYY");
+            if (!momentDueDate.isValid()) {
                 submitted.reply({
-                    content: `**[ERROR]** Invalid date please use DD-MM-YYYY format (Code:1)`,
+                    content: `**[ERROR_ADDHOMEWORK]** Invalid date format use DD/MM/YYYY`,
                     ephemeral: true,
                 });
                 return;
             }
-            const year = Number(due_input.split('/').join(',').split('-').join(',').split(',')[2]);
-            if (year > new Date().getFullYear() + 2) {
+            if (momentDueDate.year() > new Date().getFullYear() + 10 || momentDueDate.year() < new Date().getFullYear() - 10) {
                 submitted.reply({
-                    content: `**[ERROR]** Invalid date please use DD-MM-YYYY format (Code:2)`,
+                    content: `**[ERROR_ADDHOMEWORK]** Invalid year please use CE/AD year format`,
                     ephemeral: true,
                 });
                 return;
@@ -89,7 +87,7 @@ exports.addHomework = {
                 .setColor("Green")
                 .setTitle(`${subject_input} : ${name_input}`)
                 .setDescription(`${description_input}`)
-                .addFields({ name: "Page", value: `${page_input}` }, { name: "Due", value: `${due_input.split('/').join(',').split('-').join(',').split(',').join('/')}`, inline: true })
+                .addFields({ name: "Page", value: `${page_input}` }, { name: "Due", value: `${momentDueDate.format("DD/MM/YYYY")}`, inline: true })
                 .setTimestamp();
             let homework = {
                 name: subject_input,

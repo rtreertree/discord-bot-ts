@@ -40,7 +40,7 @@ export const addHomework: Command = {
         const dueInput = new TextInputBuilder()
             .setCustomId("due_input")
             .setLabel("Due date")
-            .setPlaceholder("DD-MM-YYYY")
+            .setPlaceholder("DD/MM/YYYY [in CE/AC (ex. 1/1/2023)]")
             .setStyle(TextInputStyle.Short);
 
 
@@ -72,26 +72,26 @@ export const addHomework: Command = {
                 submitted.fields.getTextInputValue("due_input"),
             ]);
             
-            // @ts-expect-error
-            const dateFilter = moment(due_input, "DD-MM-YYYY");
-            console.log(dateFilter.isValid());
-            if (dateFilter.toString() == "Invalid Date") {
+    
+            const momentDueDate = moment(due_input, "DD-MM-YYYY");
+
+        
+            if (!momentDueDate.isValid()) {
                 submitted.reply({
-                    content: `**[ERROR]** Invalid date please use DD-MM-YYYY format (Code:1)`,
+                    content: `**[ERROR_ADDHOMEWORK]** Invalid date format use DD/MM/YYYY`,
                     ephemeral: true,
                 });
                 return;
             }
 
-            const year = Number(due_input.split('/').join(',').split('-').join(',').split(',')[2]);
-            if (year > new Date().getFullYear() + 2) {
+            if (momentDueDate.year() > new Date().getFullYear() + 10 || momentDueDate.year() < new Date().getFullYear() - 10) {
                 submitted.reply({
-                    content: `**[ERROR]** Invalid date please use DD-MM-YYYY format (Code:2)`,
+                    content: `**[ERROR_ADDHOMEWORK]** Invalid year please use CE/AD year format`,
                     ephemeral: true,
                 });
                 return;
             }            
-
+            
             submitted.reply({
                 content: `Added to assignment`,
                 ephemeral: true,
@@ -103,7 +103,7 @@ export const addHomework: Command = {
                 .setDescription(`${description_input}`)
                 .addFields(
                     { name: "Page", value: `${page_input}` },
-                    { name: "Due", value: `${due_input.split('/').join(',').split('-').join(',').split(',').join('/')}`, inline: true }
+                    { name: "Due", value: `${momentDueDate.format("DD/MM/YYYY")}`, inline: true }
                 )
                 .setTimestamp()
             
